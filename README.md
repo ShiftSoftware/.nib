@@ -3,18 +3,17 @@
 A way to build websites as plain files that anyone edits by asking an AI agent. No CMS, no framework, no build:
 the files in Git are the website, the agent is the editor, and the host serves the files as they are.
 
-`.nib` holds the general rules ([AGENTS.md](AGENTS.md)), a few small scripts that need only Node.js, the setup
-steps for a new computer ([setup.md](setup.md)), and a starter site ([starter/](starter/)). Each site keeps its own
-rules in its `AGENTS.md` and its status and decisions in `.knowledge/`.
+`.nib` holds the rules and the way of working, for agents to follow: the general rules ([AGENTS.md](AGENTS.md)),
+how to keep content easy to find ([organize.md](organize.md)), how to set up a repo ([install.md](install.md)) and
+a computer ([setup.md](setup.md)), and templates for a site's own instructions ([starter/](starter/)). It holds
+no tools. Each site keeps its own tools in its `scripts/` folder (sync, map, media, check, preview, send), its own
+rules in its `AGENTS.md`, and its status and decisions in `.knowledge/`.
 
 Every site has its own copy of `.nib`: a clone in a `.nib` folder inside the site's folder, ignored by the site's
-Git, and read-only. On every prompt, `scripts/sync.mjs` undoes any change to that copy, then resets it to GitHub's
-`main` and pulls the site, each in its own background task. A deleted copy is cloned again on the next prompt. In
-Claude Code the site's `.claude/settings.json` hooks do this by themselves, load the rules at the start of every
-session, and refuse and undo edits to `.nib` as they happen; a session opened in another folder gets the same
-from the user-level hook the setup adds ([hooks/claude-user.mjs](hooks/claude-user.mjs)); other agents follow
-`AGENTS.md`. The check refuses to
-send a site that has lost any of this. So anyone who clones a site has everything in one folder, always up to date.
+Git, and read-only. On every prompt the site's sync undoes any change to that copy and resets it to GitHub's
+`main`; a deleted copy is cloned again. In Claude Code the site's hooks run the sync, load the rules at the start
+of every session, and refuse edits to `.nib`; other agents follow `AGENTS.md`. So the rules work like a skill:
+every agent in every site reads the same, current version.
 
 ## Installation
 
