@@ -1,0 +1,57 @@
+name: media
+
+on:
+  workflow_call:
+    inputs:
+      upload:
+        description: >
+          The shell command that uploads one file to the site's storage. It runs once per new file in media/, with
+          FILE (the path), KEY (the path under media/) and TYPE (the content type) set, and every repository secret
+          available as an environment variable of the same name.
+        type: string
+        required: true
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: List new media
+        id: list
+        run: |
+          main="${{ github.event.repository.default_branch }}"
+          before="${{ github.event.before }}"
+          if [ "${{ github.ref_name }}" = "$main" ] && [ -n "$before" ] && [ "$before" != "0000000000000000000000000000000000000000" ]; then
+            range="$before..${{ github.sha }}"
+          else
+            range="origin/$main...HEAD"
+          fi
+          git diff --name-only --diff-filter=A "$range" -- media > new-media.txt
+          echo "count=$(grep -c . new-media.txt || true)" >> "$GITHUB_OUTPUT"
+          cat new-media.txt
+
+      - name: Load the repository secrets
+        if: steps.list.outputs.count != '0'
+        env:
+          SECRETS: ${{ toJSON(secrets) }}
+        run: |
+          echo "$SECRETS" | jq -r 'to_entries[] | select(.key != "github_token") | "\(.key)<<NIB_EOF\n\(.value)\nNIB_EOF"' >> "$GITHUB_ENV"
+
+      - name: Upload
+        if: steps.list.outputs.count != '0'
+        env:
+          UPLOAD: ${{ inputs.upload }}
+        run: |
+          while read -r FILE; do
+            KEY="${FILE#media/}"
+            case "${FILE##*.}" in
+              avif) TYPE=image/avif ;; webp) TYPE=image/webp ;; png) TYPE=image/png ;; svg) TYPE=image/svg+xml ;;
+              ico) TYPE=image/x-icon ;; mp4) TYPE=video/mp4 ;; pdf) TYPE=application/pdf ;; *) TYPE=application/octet-stream ;;
+            esac
+            export FILE KEY TYPE
+            echo "Uploading $KEY"
+            bash -ec "$UPLOAD"
+          done < new-media.txt

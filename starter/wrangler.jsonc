@@ -1,0 +1,15 @@
+{
+  "name": "SITE-NAME",
+  "main": "worker.js",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "./site/public",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/media/*"]
+  },
+  // The public address of the media storage, ending in "/": /media/<key> is served from MEDIA_URL + <key>
+  "vars": { "MEDIA_URL": "MEDIA-STORAGE-ADDRESS/" }
+}
