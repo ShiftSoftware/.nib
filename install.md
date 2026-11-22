@@ -5,40 +5,44 @@ or already hold a website. Do every step yourself. Keep each message to one shor
 person (a click in a dashboard, a key, a choice), say exactly what to do in one line and wait. Never ask them to
 paste a key into the chat.
 
-`<nib>` is `C:\repos\ShiftSoftware\.nib` on Windows and `~/repos/ShiftSoftware/.nib` on macOS and Linux.
+The repo is the folder you are in. It gets its own copy of `.nib`, in a `.nib` folder inside it, ignored by its
+Git, so the site works on any computer without anything else in a fixed place. Every command runs from the repo's
+folder.
 
 ## 0. This computer
 
-Follow [setup.md](setup.md) steps 1 to 3. Don't go on until `node <nib>/scripts/doctor.mjs` prints `OK`: every
-later step uses those tools.
+Follow [setup.md](setup.md) steps 1 and 2, then step 4 (clone `.nib` into this folder) and step 5. Don't go on
+until `node .nib/scripts/doctor.mjs` prints `OK`: every later step uses those tools.
 
 ## 1. The repo
 
 The repo is the folder you are in (its GitHub address: `git remote get-url origin`). Pull it, then:
 
-- **Empty repo:** copy everything in `<nib>/starter/` into it, hidden files included. Ask for the site's name,
+- **Empty repo:** copy everything in `.nib/starter/` into it, hidden files included. Ask for the site's name,
   what it is for, and how it should look (a website or picture they like helps). Then build the first version
-  yourself, following the page rules in `<nib>/AGENTS.md`: `site/public/index.html`, `404.html`, `site.css` (with
+  yourself, following the page rules in `.nib/AGENTS.md`: `site/public/index.html`, `404.html`, `site.css` (with
   its `:root` tokens), `site.js`, and a template in `site/templates/` for each kind of page the site needs
   (a plain page, a product, an article). List the pages and templates in `AGENTS.md`.
-- **Repo with a site:** `git switch -c nib/setup`. Copy from `<nib>/starter/` only what is missing, and move the
-  site into this layout:
+- **Repo with a site:** `git switch -c nib/setup`. Copy from `.nib/starter/` only what is missing (add
+  its `.gitignore` lines and `.claude/settings.json` to the existing ones), and move the site into this layout:
 
   | Path | What goes there |
   |---|---|
   | `site/public/` | The pages, `site.css`, `site.js`, fonts, `404.html`. Pages flat, no subfolders |
   | `site/templates/` | One template per kind of page, made from the existing pages (a plain page, a product, an article) |
   | `site/private/` | HTML that is kept but never published |
-  | `media/` | Images, video and PDFs: run each through `node <nib>/scripts/media.mjs`, and change the pages' links |
+  | `media/` | Images, video and PDFs: run each through `node .nib/scripts/media.mjs`, and change the pages' links |
   | `scripts/` | Only the site's own extra scripts. Remove scripts that `.nib` replaces (check, preview, upload) |
   | `temp/` | Not in Git (`temp/` in `.gitignore`) |
+  | `.nib/` | This site's copy of `.nib`. Not in Git (`.nib/` in `.gitignore`) |
+  | `.claude/settings.json` | The starter's: runs `sync.mjs` on every prompt in Claude Code |
 
   Remove build tools, package files and GitHub Actions other than `.github/workflows/media.yml`.
 
 ## 2. The rules and knowledge
 
 - `AGENTS.md`: start from the starter's. Fill in the site's name, languages, pages, media folders and sizes,
-  components and allowed outside files, from the existing rules and pages. Leave out what `<nib>/AGENTS.md`
+  components and allowed outside files, from the existing rules and pages. Leave out what `.nib/AGENTS.md`
   already says.
 - `CLAUDE.md`: the one line `@AGENTS.md`. Remove any other `CLAUDE.md` content after moving it into `AGENTS.md`.
 - `.knowledge/`: start from the starter's. Move the repo's plans, status, decisions and open questions there, and
@@ -53,14 +57,14 @@ items) and fill its four tables in `AGENTS.md`, so editing agents find content i
 
 ## 3. Check and preview
 
-`node <nib>/scripts/check.mjs` until it prints no errors. Start `node <nib>/scripts/preview.mjs` and show the
+`node .nib/scripts/check.mjs` until it prints no errors. Start `node .nib/scripts/preview.mjs` and show the
 person the site. Ask if it looks right.
 
 ## 4. Publish the first version
 
 - **Empty repo:** commit, then `git push --no-verify origin main` (the only direct push to `main`, before the
   lock in step 5; `--no-verify` skips the hook that otherwise refuses it).
-- **Repo with a site:** `node <nib>/scripts/send.mjs "Set up the site with .nib"` and give the person the link to
+- **Repo with a site:** `node .nib/scripts/send.mjs "Set up the site with .nib"` and give the person the link to
   review.
 
 ## 5. Connect it

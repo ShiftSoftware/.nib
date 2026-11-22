@@ -6,10 +6,10 @@ every page so that it can, and keep it that way on every change.
 
 ## Find before you read
 
-1. `node <nib>/scripts/map.mjs "<words>"`: every place those words appear, with the file, the line and the
+1. `node .nib/scripts/map.mjs "<words>"`: every place those words appear, with the file, the line and the
    section it sits in. Search for the visible text, in the page's language. For a request in another language,
    look the words up in the site's **Words people use** table first.
-2. `node <nib>/scripts/map.mjs`: the whole site at a glance: every page, its title, and its sections with their
+2. `node .nib/scripts/map.mjs`: the whole site at a glance: every page, its title, and its sections with their
    lines and headings.
 3. Then read about 30 lines around the line it gave you. Never read a whole page to find something.
 

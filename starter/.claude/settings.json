@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && { [ -d .nib ] || git clone --quiet https://github.com/ShiftSoftware/.nib .nib; } && node .nib/scripts/sync.mjs"
+          }
+        ]
+      }
+    ]
+  }
+}

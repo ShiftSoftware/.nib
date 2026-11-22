@@ -7,6 +7,11 @@ the files in Git are the website, the agent is the editor, and the host serves t
 steps for a new computer ([setup.md](setup.md)), and a starter site ([starter/](starter/)). Each site keeps its own
 rules in its `AGENTS.md` and its status and decisions in `.knowledge/`.
 
+Every site has its own copy of `.nib`: a clone in a `.nib` folder inside the site's folder, ignored by the site's
+Git. On every prompt, `scripts/sync.mjs` pulls that copy and the site from GitHub, each in its own background task
+(Claude Code runs it through the site's `.claude/settings.json`; other agents run it as `AGENTS.md` says). So
+anyone who clones a site has everything in one folder, always up to date.
+
 ## Installation
 
 Open your repo in your agent (Claude, Codex, Kimi, Cursor or any other) and give it this:

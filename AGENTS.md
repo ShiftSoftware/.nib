@@ -10,13 +10,16 @@ These instructions are for any agent (Claude, Codex, Kimi, Cursor, Gemini or ano
 
 ## Where things are
 
-- **This folder (`<nib>`):** `C:\repos\ShiftSoftware\.nib` on Windows, `~/repos/ShiftSoftware/.nib` on macOS and
-  Linux. If it is missing: `git clone https://github.com/ShiftSoftware/.nib <nib>`. Never edit it from a site's
-  session; changes to `.nib` are made in `.nib` itself, by its maintainers.
+- **This folder (`.nib`):** every site has its own copy, in the `.nib` folder inside the site's folder: a clone of
+  `https://github.com/ShiftSoftware/.nib`, ignored by the site's Git. Every command below runs from the site's
+  folder. If it is missing: `git clone https://github.com/ShiftSoftware/.nib .nib`. Never edit it from a site's
+  session; changes to `.nib` are made in `.nib`'s own repo, by its maintainers.
 - **A site repo:**
 
   | Path | What it is |
   |---|---|
+  | `.nib/` | This site's copy of `.nib`. Not in the site's Git; `sync.mjs` keeps it up to date |
+  | `.claude/settings.json` | Runs `sync.mjs` on every prompt in Claude Code |
   | `AGENTS.md` | This site's own rules: languages, page map, components, sizes, preview port, allowed outside files |
   | `.knowledge/` | Status, decisions, open questions, and anything this site does differently from `.nib` |
   | `site/public/` | The website, exactly as visitors get it. Only this folder is published. Pages sit flat in it |
@@ -41,28 +44,30 @@ The person asking may have no technical knowledge at all: designers, marketing, 
 - **When a command you need is blocked or denied, ask the person to allow it.** Say in one line what it does and
   why. Don't work around the block with another tool, and don't hand them the step to do by hand.
 
-## Every session, and before every change
+## Every prompt
 
-Run, from the site's folder:
+Run, from the site's folder, at the start of every prompt the person sends:
 
 ```
-node <nib>/scripts/sync.mjs
+node .nib/scripts/sync.mjs
 ```
 
-It returns at once and pulls `.nib` and the site from GitHub in the background. Don't wait for it, and don't
-mention it. Anything it can't bring in safely is brought in when the changes are sent.
+It returns at once and pulls `.nib` and the site from GitHub, each in its own background task. Don't wait for it,
+and don't mention it. Anything it can't bring in safely is brought in when the changes are sent. In Claude Code the
+site's `.claude/settings.json` runs it on every prompt (and clones `.nib` if it is missing); when "OK syncing in
+the background" is already in your context for this prompt, don't run it again.
 
 Then read this site's `AGENTS.md` and `.knowledge/README.md` if you haven't in this session.
 
 ## Each request
 
-1. Find the place fast: `node <nib>/scripts/map.mjs "<words from the request>"` gives the file, line and section;
+1. Find the place fast: `node .nib/scripts/map.mjs "<words from the request>"` gives the file, line and section;
    read about 30 lines around it. Don't read whole pages. Keep every page easy to find this way: follow
    [organize.md](organize.md) whenever you add or restructure pages, sections or repeated items.
 2. Make the change, following the page rules below and the site's `AGENTS.md`.
-3. Images, video or PDFs: `node <nib>/scripts/media.mjs <file> <folder> <name>` (see Media).
-4. `node <nib>/scripts/check.mjs`. Fix every error.
-5. Make sure the preview runs: `node <nib>/scripts/preview.mjs` in the background. It prints the address, or says
+3. Images, video or PDFs: `node .nib/scripts/media.mjs <file> <folder> <name>` (see Media).
+4. `node .nib/scripts/check.mjs`. Fix every error.
+5. Make sure the preview runs: `node .nib/scripts/preview.mjs` in the background. It prints the address, or says
    the preview is already running. Show the person the page in your browser if you have one.
 6. Reply: what changed, the preview address, and "Anything else, or are you done?"
 
@@ -71,7 +76,7 @@ Don't commit or send anything until the person says they are done.
 ## When the person is done
 
 ```
-node <nib>/scripts/send.mjs "<one line in English: what changed>"
+node .nib/scripts/send.mjs "<one line in English: what changed>"
 ```
 
 It checks, starts a branch if needed (never `main`), commits, brings in the latest `main`, opens or updates the
@@ -161,7 +166,7 @@ anything until it is decided there.
 ## Media
 
 ```
-node <nib>/scripts/media.mjs <file> <folder> <name> [--width 1600] [--crop 560x420]
+node .nib/scripts/media.mjs <file> <folder> <name> [--width 1600] [--crop 560x420]
 ```
 
 - `<folder>` is under `media/` (`pages/about`, `news/2026`); `<name>` is lower-case English words with hyphens.
