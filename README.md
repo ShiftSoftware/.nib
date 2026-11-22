@@ -11,7 +11,9 @@ Every site has its own copy of `.nib`: a clone in a `.nib` folder inside the sit
 Git, and read-only. On every prompt, `scripts/sync.mjs` undoes any change to that copy, then resets it to GitHub's
 `main` and pulls the site, each in its own background task. A deleted copy is cloned again on the next prompt. In
 Claude Code the site's `.claude/settings.json` hooks do this by themselves, load the rules at the start of every
-session, and refuse and undo edits to `.nib` as they happen; other agents follow `AGENTS.md`. The check refuses to
+session, and refuse and undo edits to `.nib` as they happen; a session opened in another folder gets the same
+from the user-level hook the setup adds ([hooks/claude-user.mjs](hooks/claude-user.mjs)); other agents follow
+`AGENTS.md`. The check refuses to
 send a site that has lost any of this. So anyone who clones a site has everything in one folder, always up to date.
 
 ## Installation

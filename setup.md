@@ -29,7 +29,22 @@ somewhere else. Each site keeps its own copy of `.nib` in a `.nib` folder inside
 5. **Everything else.** From the site's folder, run `node .nib/scripts/doctor.mjs`. It lists each missing or
    unusable tool (Git name and email, ffmpeg with the encoders it needs, Ghostscript) with the command that fixes
    it. Run those commands, then run the doctor again. Repeat until it prints `OK`.
-6. **Test it.** From the site's folder: `node .nib/scripts/check.mjs` prints no errors, and
+6. **Claude Code, opened anywhere.** A site's own hooks load only when Claude Code is opened in the site's folder.
+   So a session opened elsewhere (a parent folder, a subfolder) still gets them, add these hooks to the
+   `hooks` in `~/.claude/settings.json`, keeping what is there. Each event runs the same command, which downloads
+   `hooks/claude-user.mjs` once and runs it; it clones a missing `.nib` and loads the rules for any site the
+   session works in:
+
+   | Event | Matcher |
+   |---|---|
+   | `SessionStart`, `UserPromptSubmit` | none |
+   | `PreToolUse` | `Edit\|Write\|MultiEdit\|NotebookEdit` |
+   | `PostToolUse` | `.*` |
+
+   ```
+   f="$HOME/.claude/nib-hook.mjs"; [ -s "$f" ] || curl -fsSL https://raw.githubusercontent.com/ShiftSoftware/.nib/main/hooks/claude-user.mjs -o "$f" || exit 0; node "$f"
+   ```
+7. **Test it.** From the site's folder: `node .nib/scripts/check.mjs` prints no errors, and
    `node .nib/scripts/preview.mjs` in the background serves the site (check its address loads, then stop it).
-7. **Done.** Tell the person in one line that it is ready, and that from now on they open the folder
+8. **Done.** Tell the person in one line that it is ready, and that from now on they open the folder
    `<repos>/<Org>/<Repo>` in their agent and ask for changes.
