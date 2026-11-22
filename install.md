@@ -1,19 +1,20 @@
-# Put a site on .nib
+# Set up a repo with .nib
 
-For the agent. The person asked you to start a new site on `.nib`, or to move an existing repo onto it. Do every
-step yourself. Keep each message to one short line. When a step needs the person (a click in a dashboard, a key,
-a choice), say exactly what to do in one line and wait. Never ask them to paste a key into the chat.
+For the agent. The person opened their repo in you and asked you to set it up with `.nib`. The repo may be empty
+or already hold a website. Do every step yourself. Keep each message to one short line. When a step needs the
+person (a click in a dashboard, a key, a choice), say exactly what to do in one line and wait. Never ask them to
+paste a key into the chat.
 
 `<nib>` is `C:\repos\ShiftSoftware\.nib` on Windows and `~/repos/ShiftSoftware/.nib` on macOS and Linux. Before you
 start, make sure this computer is set up: follow [setup.md](setup.md) steps 1 to 3 if anything is missing.
 
 ## 1. The repo
 
-- **New site:** ask for the site's name and the GitHub organization, then
-  `gh repo create <org>/<repo> --private --clone` into `<repos>/<org>/<repo>`. Copy everything in `<nib>/starter/`
-  into it, hidden files included.
-- **Existing repo:** clone or pull it, then `git switch -c nib/setup`. Copy from `<nib>/starter/` only what is
-  missing, and move the site into this layout:
+The repo is the folder you are in (its GitHub address: `git remote get-url origin`). Pull it, then:
+
+- **Empty repo:** copy everything in `<nib>/starter/` into it, hidden files included. Ask for the site's name.
+- **Repo with a site:** `git switch -c nib/setup`. Copy from `<nib>/starter/` only what is missing, and move the
+  site into this layout:
 
   | Path | What goes there |
   |---|---|
@@ -46,8 +47,8 @@ person the site. Ask if it looks right.
 
 ## 4. Publish the first version
 
-- **New site:** commit and push to `main` (the only direct push; `main` is locked in step 5).
-- **Existing repo:** `node <nib>/scripts/send.mjs "Move the site onto .nib"` and give the person the link to
+- **Empty repo:** commit and push to `main` (the only direct push; `main` is locked in step 5).
+- **Repo with a site:** `node <nib>/scripts/send.mjs "Set up the site with .nib"` and give the person the link to
   review.
 
 ## 5. Connect it

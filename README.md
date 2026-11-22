@@ -7,14 +7,17 @@ the files in Git are the website, the agent is the editor, and Cloudflare serves
 steps for a new computer ([setup.md](setup.md)), and a starter site ([starter/](starter/)). Each site keeps its own
 rules in its `AGENTS.md` and its status and decisions in `.knowledge/`.
 
+## Installation
+
+Open your repo in your agent (Claude, Codex, Kimi, Cursor or any other) and give it this:
+
+```text
+Set up this repo with .nib by following https://raw.githubusercontent.com/ShiftSoftware/.nib/main/install.md
+```
+
 ## How it works
 
-```
-person asks ──> agent edits the files ──> check ──> local preview ──> "done" ──> pull request
-                                                                                    │
-                       Cloudflare preview link for the branch  <────────────────────┤
-                       admin merges into main ──> Cloudflare publishes the files ───┘
-```
+<img src="guide/how-it-works.svg" alt="How .nib works: you ask, the agent edits the files, checks them and shows a preview on your computer; when you say done, the changes are sent for review, Cloudflare gives a preview link, an admin merges, and the site is live." width="100%">
 
 | Part | What it is |
 |---|---|
@@ -24,34 +27,7 @@ person asks ──> agent edits the files ──> check ──> local preview �
 | Media | Optimized by the agent, kept in `media/`, copied to the site's own storage by one small GitHub Action |
 | Knowledge | `.knowledge/` in each site: status, decisions, and how the site differs from `.nib` |
 
-Needs on each computer: Git, GitHub CLI, Node.js, ffmpeg and Ghostscript. [setup.md](setup.md) installs them.
-
-## Use it
-
-You don't do the steps; your agent does. Copy one of these into your agent (Claude, Codex, Kimi, Cursor or any
-agent that works with files on your computer). It does everything it can itself and tells you in one line when it
-needs you: a click in Cloudflare, a key to add on GitHub, or a name.
-
-**A new site:**
-
-```text
-Start a new website on .nib for me.
-Follow https://raw.githubusercontent.com/ShiftSoftware/.nib/main/install.md step by step.
-I'm not technical: do every step yourself and keep each message to me to one short line.
-```
-
-**An existing repo:**
-
-```text
-Move https://github.com/ORG/REPO onto .nib.
-Follow https://raw.githubusercontent.com/ShiftSoftware/.nib/main/install.md step by step.
-I'm not technical: do every step yourself and keep each message to me to one short line.
-```
-
-**A new computer** for someone who edits a site: the prompt is in that site's README.
-
-Keys never go in the chat. When the site's file upload needs one, the agent gives you the name and the GitHub
-page to add it on, as a repository secret.
+Each computer needs Git, GitHub CLI, Node.js, ffmpeg and Ghostscript; the agent installs what is missing.
 
 ## Changing .nib
 

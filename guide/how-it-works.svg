@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" width="1000" height="420" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <title>How .nib works</title>
+  <desc>On your computer: you ask in plain words, the agent edits the website files, checks them and shows a preview. When you say done, the changes are sent for review on GitHub, Cloudflare gives a preview link, an admin merges, and the files go live as they are.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#8a8f98"/>
+    </marker>
+  </defs>
+
+  <rect x="0.5" y="0.5" width="999" height="419" rx="16" fill="#ffffff" stroke="#e3e5e8"/>
+
+  <text x="40" y="48" font-size="13" font-weight="700" letter-spacing="1.5" fill="#6b7079">ON YOUR COMPUTER</text>
+  <text x="40" y="258" font-size="13" font-weight="700" letter-spacing="1.5" fill="#6b7079">ON GITHUB AND CLOUDFLARE</text>
+
+  <g font-size="18" font-weight="650" fill="#16181d">
+    <g>
+      <rect x="40" y="66" width="200" height="88" rx="12" fill="#fff4e5" stroke="#f2c48d"/>
+      <circle cx="66" cy="92" r="13" fill="#e8892b"/><text x="66" y="97" font-size="13" fill="#fff" text-anchor="middle">1</text>
+      <text x="88" y="98">You ask</text>
+      <text x="62" y="132" font-size="14" font-weight="400" fill="#4a4f57">in plain words</text>
+    </g>
+    <g>
+      <rect x="280" y="66" width="200" height="88" rx="12" fill="#eef4ff" stroke="#a9c3f5"/>
+      <circle cx="306" cy="92" r="13" fill="#3b6fd8"/><text x="306" y="97" font-size="13" fill="#fff" text-anchor="middle">2</text>
+      <text x="328" y="98">Agent edits</text>
+      <text x="302" y="132" font-size="14" font-weight="400" fill="#4a4f57">the website files</text>
+    </g>
+    <g>
+      <rect x="520" y="66" width="200" height="88" rx="12" fill="#eef4ff" stroke="#a9c3f5"/>
+      <circle cx="546" cy="92" r="13" fill="#3b6fd8"/><text x="546" y="97" font-size="13" fill="#fff" text-anchor="middle">3</text>
+      <text x="568" y="98">Check</text>
+      <text x="542" y="132" font-size="14" font-weight="400" fill="#4a4f57">rules, links, images</text>
+    </g>
+    <g>
+      <rect x="760" y="66" width="200" height="88" rx="12" fill="#eef4ff" stroke="#a9c3f5"/>
+      <circle cx="786" cy="92" r="13" fill="#3b6fd8"/><text x="786" y="97" font-size="13" fill="#fff" text-anchor="middle">4</text>
+      <text x="808" y="98">Preview</text>
+      <text x="782" y="132" font-size="14" font-weight="400" fill="#4a4f57">you look, ask for more</text>
+    </g>
+
+    <g>
+      <rect x="40" y="276" width="200" height="88" rx="12" fill="#f1f2f4" stroke="#cfd3d9"/>
+      <circle cx="66" cy="302" r="13" fill="#5b616b"/><text x="66" y="307" font-size="13" fill="#fff" text-anchor="middle">5</text>
+      <text x="88" y="308">Sent for review</text>
+      <text x="62" y="342" font-size="14" font-weight="400" fill="#4a4f57">a pull request</text>
+    </g>
+    <g>
+      <rect x="280" y="276" width="200" height="88" rx="12" fill="#f1f2f4" stroke="#cfd3d9"/>
+      <circle cx="306" cy="302" r="13" fill="#5b616b"/><text x="306" y="307" font-size="13" fill="#fff" text-anchor="middle">6</text>
+      <text x="328" y="308">Preview link</text>
+      <text x="302" y="342" font-size="14" font-weight="400" fill="#4a4f57">to share and approve</text>
+    </g>
+    <g>
+      <rect x="520" y="276" width="200" height="88" rx="12" fill="#f1f2f4" stroke="#cfd3d9"/>
+      <circle cx="546" cy="302" r="13" fill="#5b616b"/><text x="546" y="307" font-size="13" fill="#fff" text-anchor="middle">7</text>
+      <text x="568" y="308">Admin merges</text>
+      <text x="542" y="342" font-size="14" font-weight="400" fill="#4a4f57">the only way to main</text>
+    </g>
+    <g>
+      <rect x="760" y="276" width="200" height="88" rx="12" fill="#e9f8ef" stroke="#94d6ad"/>
+      <circle cx="786" cy="302" r="13" fill="#23964f"/><text x="786" y="307" font-size="13" fill="#fff" text-anchor="middle">8</text>
+      <text x="808" y="308">Live</text>
+      <text x="782" y="342" font-size="14" font-weight="400" fill="#4a4f57">files served as they are</text>
+    </g>
+  </g>
+
+  <g stroke="#8a8f98" stroke-width="2" fill="none" marker-end="url(#arrow)">
+    <path d="M242 110 H276"/>
+    <path d="M482 110 H516"/>
+    <path d="M722 110 H756"/>
+    <path d="M242 320 H276"/>
+    <path d="M482 320 H516"/>
+    <path d="M722 320 H756"/>
+    <path d="M860 156 V196 H18 V320 H36"/>
+  </g>
+  <rect x="420" y="182" width="160" height="28" rx="14" fill="#16181d"/>
+  <text x="500" y="201" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">you say “done”</text>
+
+  <text x="40" y="398" font-size="13" fill="#6b7079">No CMS, no framework, no build: the files in Git are the website. Images, video and PDFs are optimized by the agent.</text>
+</svg>
