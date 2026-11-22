@@ -36,7 +36,7 @@ need(run('ffprobe', ['-version']).ok, 'ffprobe (comes with ffmpeg)', install.ffm
 need(ghostscript(), 'Ghostscript (PDFs)', install.ghostscript[os]);
 
 const nib = run('git', ['-C', nibRoot, 'remote', 'get-url', 'origin']);
-need(nib.ok && /ShiftSoftware\/\.nib/i.test(nib.out), `.nib cloned with Git at ${nibRoot}`, 'git clone https://github.com/ShiftSoftware/.nib');
+need(nib.ok && /ShiftSoftware\/\.nib/i.test(nib.out), `.nib cloned with Git at ${nibRoot}`, 'from the site\'s folder: git clone https://github.com/ShiftSoftware/.nib .nib');
 
 if (problems.length) {
   console.log(`MISSING ${problems.length}:`);

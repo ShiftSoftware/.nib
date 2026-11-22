@@ -27,6 +27,7 @@ if (!existsSync(join(pub, 'index.html'))) err('site/public/index.html', 'missing
 if (!existsSync(join(pub, '404.html'))) err('site/public/404.html', 'missing "page not found" page');
 const ignored = run('git', ['-C', root, 'check-ignore', '-q', 'temp/x']);
 if (!ignored.ok) err('.gitignore', 'temp/ must be ignored by Git');
+if (!run('git', ['-C', root, 'check-ignore', '-q', '.nib/x']).ok) err('.gitignore', '.nib/ must be ignored by Git');
 
 const pages = ['public', 'templates', 'private'].flatMap((d) => walk(join(site, d)).filter((f) => f.endsWith('.html')));
 const texts = new Map(pages.map((p) => [p, readFileSync(p, 'utf8').replaceAll('\r\n', '\n')]));

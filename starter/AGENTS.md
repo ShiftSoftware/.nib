@@ -4,10 +4,10 @@ ONE LINE: what this site is, who it is for, its languages.
 
 ## First, every session and every request
 
-1. Find `.nib`: `C:\repos\ShiftSoftware\.nib` on Windows, `~/repos/ShiftSoftware/.nib` on macOS and Linux. If it
-   is missing, `git clone https://github.com/ShiftSoftware/.nib` there.
-2. Run `node <nib>/scripts/sync.mjs` from this folder (it returns at once; the update runs in the background).
-3. Read `<nib>/AGENTS.md` and follow it. It holds the general rules; this file adds what is specific to this site.
+1. `.nib` is the `.nib` folder inside this one. If it is missing: `git clone https://github.com/ShiftSoftware/.nib .nib`.
+2. Run `node .nib/scripts/sync.mjs` from this folder at the start of every prompt (it returns at once; the
+   updates run in the background). Claude Code does this by itself through `.claude/settings.json`.
+3. Read `.nib/AGENTS.md` and follow it. It holds the general rules; this file adds what is specific to this site.
 4. Read `.knowledge/README.md` for this site's status, decisions and how it differs from `.nib`.
 
 ## This site
@@ -15,7 +15,7 @@ ONE LINE: what this site is, who it is for, its languages.
 | | |
 |---|---|
 | Languages | English (`lang="en"`) |
-| Preview | `node <nib>/scripts/preview.mjs` (port 8300, or the next free one) |
+| Preview | `node .nib/scripts/preview.mjs` (port 8300, or the next free one) |
 | Hosting | HOST: what serves the site, how branches get preview links, and how `/media/` reaches the storage |
 | Media storage | STORAGE: what it is and its public address |
 | Allowed outside files | None |
