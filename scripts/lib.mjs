@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -11,6 +11,16 @@ export function run(cmd, args, opts = {}) {
 }
 
 export const git = (...args) => run('git', args);
+
+export function ghostscript() {
+  for (const name of ['gs', 'gswin64c']) if (!run(name, ['--version']).missing) return name;
+  if (process.platform !== 'win32') return null;
+  // The Windows installer doesn't add Ghostscript to PATH.
+  const base = join(process.env.ProgramFiles || 'C:\\Program Files', 'gs');
+  if (!existsSync(base)) return null;
+  const exe = readdirSync(base).sort().reverse().map((v) => join(base, v, 'bin', 'gswin64c.exe')).find(existsSync);
+  return exe || null;
+}
 
 export function siteRoot() {
   const top = git('rev-parse', '--show-toplevel');

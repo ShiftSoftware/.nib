@@ -1,6 +1,6 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, renameSync, rmSync, statSync } from 'node:fs';
 import { basename, extname, join } from 'node:path';
-import { run, siteRoot } from './lib.mjs';
+import { run, siteRoot, ghostscript } from './lib.mjs';
 
 const args = process.argv.slice(2);
 const option = (name) => { const i = args.indexOf(name); return i < 0 ? null : args.splice(i, 2)[1]; };
@@ -47,7 +47,7 @@ if (keep.includes(ext)) {
 } else if (ext === 'pdf') {
   out = join(dir, `${name}.pdf`);
   const tmp = `${out}.tmp`;
-  const gs = ['gs', 'gswin64c'].find((g) => !run(g, ['--version']).missing);
+  const gs = ghostscript();
   if (gs && run(gs, ['-sDEVICE=pdfwrite', '-dCompatibilityLevel=1.5', '-dPDFSETTINGS=/ebook', '-dNOPAUSE', '-dQUIET', '-dBATCH', `-sOutputFile=${tmp}`, original]).ok && statSync(tmp).size < statSync(original).size) {
     renameSync(tmp, out);
   } else {

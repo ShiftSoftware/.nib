@@ -5,8 +5,12 @@ or already hold a website. Do every step yourself. Keep each message to one shor
 person (a click in a dashboard, a key, a choice), say exactly what to do in one line and wait. Never ask them to
 paste a key into the chat.
 
-`<nib>` is `C:\repos\ShiftSoftware\.nib` on Windows and `~/repos/ShiftSoftware/.nib` on macOS and Linux. Before you
-start, make sure this computer is set up: follow [setup.md](setup.md) steps 1 to 3 if anything is missing.
+`<nib>` is `C:\repos\ShiftSoftware\.nib` on Windows and `~/repos/ShiftSoftware/.nib` on macOS and Linux.
+
+## 0. This computer
+
+Follow [setup.md](setup.md) steps 1 to 3. Don't go on until `node <nib>/scripts/doctor.mjs` prints `OK`: every
+later step uses those tools.
 
 ## 1. The repo
 
