@@ -1,10 +1,11 @@
 name: media
 on:
   push:
-    paths: ['media/**']
+    paths: ['media/**', '.github/workflows/media.yml']
 jobs:
   media:
     uses: ShiftSoftware/.nib/.github/workflows/media.yml@main
     with:
       upload: echo "No upload command set yet; see the .nib README, Media storage" && exit 1
-    secrets: inherit
+    secrets:
+      SITE_SECRETS: ${{ toJSON(secrets) }}
