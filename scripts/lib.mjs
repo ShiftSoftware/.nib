@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const nibRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -40,4 +40,19 @@ export function defaultBranch() {
 export function conflicts() {
   const r = git('diff', '--name-only', '--diff-filter=U');
   return r.ok && r.out ? r.out.split('\n') : [];
+}
+
+// Only a site's own copy (<site>/.nib) is kept read-only; a maintainer's clone of .nib is never touched.
+// Without its own .git, git -C .nib would act on the site's repo instead.
+export const isSiteCopy = (site) => resolve(nibRoot) === resolve(site, '.nib') && existsSync(join(nibRoot, '.git'));
+
+export function undoNibChanges() {
+  if (!git('-C', nibRoot, 'status', '--porcelain').out) return false;
+  git('-C', nibRoot, 'reset', '--hard', '--quiet');
+  git('-C', nibRoot, 'clean', '-fdq');
+  return true;
+}
+
+export function starterHooks() {
+  return JSON.parse(readFileSync(join(nibRoot, 'starter', '.claude', 'settings.json'), 'utf8')).hooks;
 }

@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, dirname, extname, join, relative } from 'node:path';
-import { run, siteRoot, defaultBranch } from './lib.mjs';
+import { run, siteRoot, defaultBranch, starterHooks } from './lib.mjs';
 
 const root = siteRoot();
 const site = join(root, 'site');
@@ -28,6 +28,13 @@ if (!existsSync(join(pub, '404.html'))) err('site/public/404.html', 'missing "pa
 const ignored = run('git', ['-C', root, 'check-ignore', '-q', 'temp/x']);
 if (!ignored.ok) err('.gitignore', 'temp/ must be ignored by Git');
 if (!run('git', ['-C', root, 'check-ignore', '-q', '.nib/x']).ok) err('.gitignore', '.nib/ must be ignored by Git');
+let siteHooks;
+try { siteHooks = JSON.parse(readFileSync(join(root, '.claude', 'settings.json'), 'utf8')).hooks; } catch {}
+if (JSON.stringify(siteHooks) !== JSON.stringify(starterHooks())) err('.claude/settings.json', 'its hooks must be exactly those in .nib/starter/.claude/settings.json; run node .nib/scripts/sync.mjs to restore them');
+const agents = existsSync(join(root, 'AGENTS.md')) ? readFileSync(join(root, 'AGENTS.md'), 'utf8') : '';
+for (const must of ['.nib/scripts/sync.mjs', '.nib/AGENTS.md']) if (!agents.includes(must)) err('AGENTS.md', `must tell agents to use ${must}; start it from .nib/starter/AGENTS.md`);
+const nibChanges = existsSync(join(root, '.nib', '.git')) && run('git', ['-C', join(root, '.nib'), 'status', '--porcelain']);
+if (nibChanges && nibChanges.ok && nibChanges.out) err('.nib', 'has local changes; .nib is read-only in a site. Run node .nib/scripts/sync.mjs to undo them');
 
 const pages = ['public', 'templates', 'private'].flatMap((d) => walk(join(site, d)).filter((f) => f.endsWith('.html')));
 const texts = new Map(pages.map((p) => [p, readFileSync(p, 'utf8').replaceAll('\r\n', '\n')]));

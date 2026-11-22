@@ -12,14 +12,14 @@ These instructions are for any agent (Claude, Codex, Kimi, Cursor, Gemini or ano
 
 - **This folder (`.nib`):** every site has its own copy, in the `.nib` folder inside the site's folder: a clone of
   `https://github.com/ShiftSoftware/.nib`, ignored by the site's Git. Every command below runs from the site's
-  folder. If it is missing: `git clone https://github.com/ShiftSoftware/.nib .nib`. Never edit it from a site's
-  session; changes to `.nib` are made in `.nib`'s own repo, by its maintainers.
+  folder. If it is missing: `git clone https://github.com/ShiftSoftware/.nib .nib`. It is read-only (rule 12):
+  every prompt resets it to GitHub's `main`, so deleting it is safe and the next prompt clones it again.
 - **A site repo:**
 
   | Path | What it is |
   |---|---|
   | `.nib/` | This site's copy of `.nib`. Not in the site's Git; `sync.mjs` keeps it up to date |
-  | `.claude/settings.json` | Runs `sync.mjs` on every prompt in Claude Code |
+  | `.claude/settings.json` | The Claude Code hooks from `.nib/starter/`: load the rules at the start of a session, sync on every prompt, clone `.nib` if it is missing, refuse and undo changes to `.nib`. Never change them; `sync.mjs` restores them and the check compares them |
   | `AGENTS.md` | This site's own rules: languages, page map, components, sizes, preview port, allowed outside files |
   | `.knowledge/` | Status, decisions, open questions, and anything this site does differently from `.nib` |
   | `site/public/` | The website, exactly as visitors get it. Only this folder is published. Pages sit flat in it |
@@ -52,10 +52,13 @@ Run, from the site's folder, at the start of every prompt the person sends:
 node .nib/scripts/sync.mjs
 ```
 
-It returns at once and pulls `.nib` and the site from GitHub, each in its own background task. Don't wait for it,
-and don't mention it. Anything it can't bring in safely is brought in when the changes are sent. In Claude Code the
-site's `.claude/settings.json` runs it on every prompt (and clones `.nib` if it is missing); when "OK syncing in
-the background" is already in your context for this prompt, don't run it again.
+If `.nib` is missing, clone it first (above). `sync.mjs` returns at once. It undoes any change to `.nib`, restores
+the site's Claude Code hooks, and then, each in its own background task, resets `.nib` to GitHub's `main` and pulls
+the site. Don't wait for it, and don't mention it. Anything it can't bring in safely is brought in when the changes
+are sent.
+
+In Claude Code the site's hooks do all of this by themselves, on every session start, prompt and tool use. When
+"OK syncing .nib and the site" is already in your context for this prompt, don't run it again.
 
 Then read this site's `AGENTS.md` and `.knowledge/README.md` if you haven't in this session.
 
@@ -138,6 +141,11 @@ anything until it is decided there.
     component, not from a copy in the pages.
 11. **Never push to `main`.** Every change goes to a branch, then a pull request; an admin merges. `sync.mjs`
     installs a Git hook that refuses a push to `main`; never bypass it.
+12. **`.nib` is read-only in a site.** Never edit, add, delete, commit or switch branches in a site's `.nib`, and
+    never change or remove what ties the site to it: the hooks in `.claude/settings.json`, the `.nib` lines in
+    `AGENTS.md`, `.nib/` in `.gitignore`. The hooks refuse such edits and undo them, `sync.mjs` resets `.nib` to
+    GitHub on every prompt, and the check refuses to send a site without them. When `.nib` itself needs to change,
+    write the proposal in the site's `.knowledge/` (rule 8); its maintainers change it in `.nib`'s own repo.
 
 ## Page rules
 

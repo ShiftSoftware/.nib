@@ -35,7 +35,7 @@ The repo is the folder you are in (its GitHub address: `git remote get-url origi
   | `scripts/` | Only the site's own extra scripts. Remove scripts that `.nib` replaces (check, preview, upload) |
   | `temp/` | Not in Git (`temp/` in `.gitignore`) |
   | `.nib/` | This site's copy of `.nib`. Not in Git (`.nib/` in `.gitignore`) |
-  | `.claude/settings.json` | The starter's: runs `sync.mjs` on every prompt in Claude Code |
+  | `.claude/settings.json` | The starter's hooks, exactly: they keep `.nib` synced and read-only in Claude Code |
 
   Remove build tools, package files and GitHub Actions other than `.github/workflows/media.yml`.
 

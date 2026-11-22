@@ -5,6 +5,7 @@ ONE LINE: what this site is, who it is for, its languages.
 ## First, every session and every request
 
 1. `.nib` is the `.nib` folder inside this one. If it is missing: `git clone https://github.com/ShiftSoftware/.nib .nib`.
+   It is read-only: never change anything in it (`.nib/AGENTS.md`, rule 12).
 2. Run `node .nib/scripts/sync.mjs` from this folder at the start of every prompt (it returns at once; the
    updates run in the background). Claude Code does this by itself through `.claude/settings.json`.
 3. Read `.nib/AGENTS.md` and follow it. It holds the general rules; this file adds what is specific to this site.
