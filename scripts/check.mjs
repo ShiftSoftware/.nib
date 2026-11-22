@@ -22,7 +22,7 @@ function walk(dir) {
 for (const entry of readdirSync(site)) {
   if (!['public', 'private', 'templates'].includes(entry)) err(`site/${entry}`, 'site/ holds only public/, private/ and templates/');
 }
-if (!existsSync(join(site, 'templates'))) err('site/templates', 'missing; new pages start from a template');
+if (!walk(join(site, 'templates')).some((f) => f.endsWith('.html'))) err('site/templates', 'no templates; make one per kind of page, new pages start from them');
 if (!existsSync(join(pub, 'index.html'))) err('site/public/index.html', 'missing home page');
 if (!existsSync(join(pub, '404.html'))) err('site/public/404.html', 'missing "page not found" page');
 const ignored = run('git', ['-C', root, 'check-ignore', '-q', 'temp/x']);

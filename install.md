@@ -16,14 +16,18 @@ later step uses those tools.
 
 The repo is the folder you are in (its GitHub address: `git remote get-url origin`). Pull it, then:
 
-- **Empty repo:** copy everything in `<nib>/starter/` into it, hidden files included. Ask for the site's name.
+- **Empty repo:** copy everything in `<nib>/starter/` into it, hidden files included. Ask for the site's name,
+  what it is for, and how it should look (a website or picture they like helps). Then build the first version
+  yourself, following the page rules in `<nib>/AGENTS.md`: `site/public/index.html`, `404.html`, `site.css` (with
+  its `:root` tokens), `site.js`, and a template in `site/templates/` for each kind of page the site needs
+  (a plain page, a product, an article). List the pages and templates in `AGENTS.md`.
 - **Repo with a site:** `git switch -c nib/setup`. Copy from `<nib>/starter/` only what is missing, and move the
   site into this layout:
 
   | Path | What goes there |
   |---|---|
   | `site/public/` | The pages, `site.css`, `site.js`, fonts, `404.html`. Pages flat, no subfolders |
-  | `site/templates/` | The starting pages for new pages |
+  | `site/templates/` | One template per kind of page, made from the existing pages (a plain page, a product, an article) |
   | `site/private/` | HTML that is kept but never published |
   | `media/` | Images, video and PDFs: run each through `node <nib>/scripts/media.mjs`, and change the pages' links |
   | `scripts/` | Only the site's own extra scripts. Remove scripts that `.nib` replaces (check, preview, upload) |

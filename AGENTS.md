@@ -20,7 +20,7 @@ These instructions are for any agent (Claude, Codex, Kimi, Cursor, Gemini or ano
   | `AGENTS.md` | This site's own rules: languages, page map, components, sizes, preview port, allowed outside files |
   | `.knowledge/` | Status, decisions, open questions, and anything this site does differently from `.nib` |
   | `site/public/` | The website, exactly as visitors get it. Only this folder is published. Pages sit flat in it |
-  | `site/templates/` | Starting pages. Copy one into `site/public/` to make a new page. Never published |
+  | `site/templates/` | This site's own templates, one per kind of page (`page.html`, `product.html`, `article.html`). You make and keep them. Never published |
   | `site/private/` | HTML in the repo that is never published (drafts, internal pages) |
   | `media/` | Images, video and PDFs, already optimized. Pages link them as `media/...`; on the live site they come from the media storage |
   | `scripts/` | Only this site's extra scripts. `scripts/check.mjs`, if present, runs with the general check |
@@ -134,8 +134,13 @@ anything until it is decided there.
 
 ## Page rules
 
-- Every page starts from a file in `site/templates/`: copy it into `site/public/`, keep its `<head>`, header and
-  footer, replace the main part. Page names are lower-case English words with hyphens (`after-sales.html`).
+- **Templates are yours to keep.** Each site has one template in `site/templates/` per kind of page: a plain
+  page, a product, an article, a branch. Every new page starts from the template of its kind: copy it into
+  `site/public/`, keep its `<head>`, header and footer, fill in the main part. When a new kind of page is needed,
+  make its template first, from the site's existing pages and components, then the page from it. When a shared
+  block (header, footer, a component) changes, change the templates in the same change. List the templates in
+  the site's `AGENTS.md`. The person never needs to know templates exist.
+- Page names are lower-case English words with hyphens (`after-sales.html`).
 - All pages sit directly in `site/public/`. Links are relative file names (`about.html`, `index.html#contact`).
   Never a path starting with `/`, except in `404.html`, which has `<base href="/">`.
 - The blocks between `<!-- HEADER -->` and `<!-- /HEADER -->`, and `<!-- FOOTER -->` and `<!-- /FOOTER -->`, are

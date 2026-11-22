@@ -25,7 +25,14 @@ ONE LINE: what this site is, who it is for, its languages.
 |---|---|
 | `site/public/index.html` | Home |
 | `site/public/404.html` | Page not found |
-| `site/templates/page.html` | Start of every new page |
+
+## Templates
+
+One per kind of page, made and kept by the agent (see `.nib/AGENTS.md`, Page rules).
+
+| Template | For |
+|---|---|
+| `site/templates/page.html` | A plain page |
 
 ## Media folders and sizes
 
