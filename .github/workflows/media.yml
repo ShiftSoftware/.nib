@@ -10,6 +10,12 @@ on:
           available as an environment variable of the same name.
         type: string
         required: true
+    secrets:
+      SITE_SECRETS:
+        description: >
+          The site's repository secrets as JSON (toJSON(secrets)). secrets: inherit passes nothing to a workflow in
+          another organization, so sites pass them this way.
+        required: false
 
 jobs:
   upload:
@@ -36,7 +42,7 @@ jobs:
       - name: Load the repository secrets
         if: steps.list.outputs.count != '0'
         env:
-          SECRETS: ${{ toJSON(secrets) }}
+          SECRETS: ${{ secrets.SITE_SECRETS || toJSON(secrets) }}
         run: |
           echo "$SECRETS" | jq -r 'to_entries[] | select(.key != "github_token") | "\(.key)<<NIB_EOF\n\(.value)\nNIB_EOF"' >> "$GITHUB_ENV"
 
