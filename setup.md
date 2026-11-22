@@ -24,16 +24,17 @@ somewhere else. Each site keeps its own copy of `.nib` in a `.nib` folder inside
 3. **The site.** Ask for the site's address if they didn't give it. Clone it with `gh repo clone <Org>/<Repo>` to
    `<repos>/<Org>/<Repo>` (named exactly as on GitHub), or pull it if it is there. If they have no access, tell
    them to ask the site's admin to add their GitHub account, and stop.
-4. **.nib.** From the site's folder: `git clone https://github.com/ShiftSoftware/.nib .nib`, or
-   `git -C .nib pull` if it is there. Then `node .nib/scripts/sync.mjs`.
-5. **Everything else.** From the site's folder, run `node .nib/scripts/doctor.mjs`. It lists each missing or
+4. **.nib and the site's tools.** The site lists its commands in its `AGENTS.md`, under Commands. From the site's
+   folder, run its sync (`node scripts/sync.mjs` in most sites): it clones `.nib` into the `.nib` folder.
+5. **Everything else.** Run the site's doctor if it has one (`node scripts/doctor.mjs`). It lists each missing or
    unusable tool (Git name and email, ffmpeg with the encoders it needs, Ghostscript) with the command that fixes
    it. Run those commands, then run the doctor again. Repeat until it prints `OK`.
 6. **Claude Code, opened anywhere.** A site's own hooks load only when Claude Code is opened in the site's folder.
-   So a session opened elsewhere (a parent folder, a subfolder) still gets them, add these hooks to the
-   `hooks` in `~/.claude/settings.json`, keeping what is there. Each event runs the same command, which downloads
-   `hooks/claude-user.mjs` once and runs it; it clones a missing `.nib` and loads the rules for any site the
-   session works in:
+   So that a session opened elsewhere (a parent folder, a subfolder) still gets them, if the site has a user-level
+   hook (`scripts/claude-user.mjs`): copy it to `~/.claude/nib-hook.mjs`, add the site's full folder path as a
+   line in `~/.claude/nib-sites.txt` (the hook runs a site's scripts only for the folders listed there), and add
+   these hooks to the `hooks` in `~/.claude/settings.json`, keeping what is there. Each event runs the same
+   command:
 
    | Event | Matcher |
    |---|---|
@@ -42,9 +43,9 @@ somewhere else. Each site keeps its own copy of `.nib` in a `.nib` folder inside
    | `PostToolUse` | `.*` |
 
    ```
-   f="$HOME/.claude/nib-hook.mjs"; [ -s "$f" ] || curl -fsSL https://raw.githubusercontent.com/ShiftSoftware/.nib/main/hooks/claude-user.mjs -o "$f" || exit 0; node "$f"
+   f="$HOME/.claude/nib-hook.mjs"; [ -s "$f" ] || exit 0; node "$f"
    ```
-7. **Test it.** From the site's folder: `node .nib/scripts/check.mjs` prints no errors, and
-   `node .nib/scripts/preview.mjs` in the background serves the site (check its address loads, then stop it).
+7. **Test it.** From the site's folder: the site's check prints no errors, and its preview, started in the
+   background, serves the site (check its address loads, then stop it).
 8. **Done.** Tell the person in one line that it is ready, and that from now on they open the folder
    `<repos>/<Org>/<Repo>` in their agent and ask for changes.

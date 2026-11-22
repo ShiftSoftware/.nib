@@ -4,9 +4,9 @@ ONE LINE: what this site is, who it is for, its languages.
 
 ## First, every session and every request
 
-1. `.nib` is the `.nib` folder inside this one. If it is missing: `git clone https://github.com/ShiftSoftware/.nib .nib`.
-   It is read-only: never change anything in it (`.nib/AGENTS.md`, rule 12).
-2. Run `node .nib/scripts/sync.mjs` from this folder at the start of every prompt (it returns at once; the
+1. `.nib` is the `.nib` folder inside this one: the general rules. It is read-only: never change anything in it
+   (`.nib/AGENTS.md`, rule 12). `scripts/sync.mjs` clones it if it is missing.
+2. Run `node scripts/sync.mjs` from this folder at the start of every prompt (it returns at once; the
    updates run in the background). Claude Code does this by itself through `.claude/settings.json`.
 3. Read `.nib/AGENTS.md` and follow it. It holds the general rules; this file adds what is specific to this site.
 4. Read `.knowledge/README.md` for this site's status, decisions and how it differs from `.nib`.
@@ -16,10 +16,22 @@ ONE LINE: what this site is, who it is for, its languages.
 | | |
 |---|---|
 | Languages | English (`lang="en"`) |
-| Preview | `node .nib/scripts/preview.mjs` (port 8300, or the next free one) |
-| Hosting | HOST: what serves the site, how branches get preview links, and how `/media/` reaches the storage |
+| Hosting | HOST: what serves the site and how branches get preview links |
 | Media storage | STORAGE: what it is and its public address |
 | Allowed outside files | None |
+
+## Commands
+
+This site's own tools, in `scripts/`. They belong to this repo; change them here.
+
+| Command | What it does |
+|---|---|
+| `node scripts/sync.mjs` | Every prompt: keeps `.nib` current and read-only, pulls the site |
+| `node scripts/map.mjs "<words>"` | Finds the file, line and section for words from a request |
+| `node scripts/media.mjs <file> <folder> <name>` | Optimizes an image, video or PDF into `media/<folder>/` |
+| `node scripts/check.mjs` | Checks the pages and media |
+| `node scripts/preview.mjs` | Starts the local preview |
+| `node scripts/send.mjs "<what changed>"` | Sends media to the storage, then the changes for review; prints the preview link |
 
 ## Pages
 

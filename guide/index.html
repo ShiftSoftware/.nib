@@ -192,11 +192,9 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
   <div class="stats">
     <div class="stat"><b>1</b><span>line to paste into your agent to set up a repo</span></div>
     <div class="stat"><b>11</b><span>rules in <code>AGENTS.md</code> that every agent follows</span></div>
-    <div class="stat"><b>7</b><span>small scripts: sync, check, preview, media, send, doctor and their helper</span></div>
-    <div class="stat"><b>~430</b><span>lines of JavaScript in all of them, with no packages</span></div>
+    <div class="stat"><b>0</b><span>tools in <code>.nib</code>: each site keeps its own small scripts (sync, check, preview, media, send)</span></div>
     <div class="stat"><b>0</b><span>frameworks, build steps, databases or admin panels</span></div>
     <div class="stat"><b>1</b><span>GitHub Action, and it only copies new media to storage</span></div>
-    <div class="stat"><b>~3 KB</b><span>the starter site's pages, stylesheet and script together</span></div>
     <div class="stat"><b>Any</b><span>agent: Claude, Codex, Kimi, Cursor or another</span></div>
   </div>
 </section>
@@ -216,13 +214,14 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
 <section aria-labelledby="s-media">
   <span class="eyebrow">The one integration</span>
   <h2 id="s-media">Images and video go to the storage you choose</h2>
-  <p>Media is the only thing a site connects to. The agent optimizes every file, keeps it in <code>media/</code>, and a small GitHub Action copies new files to the site's storage. The pages only hold <code>media/…</code> addresses, so the storage can be anything that serves files at a public address.</p>
+  <p>Media is the only thing a site connects to, and it never goes into Git. The agent optimizes every file and keeps it in <code>media/</code> on the computer for the preview. When the changes are sent, GitHub copies the new files to the site's storage, the pages switch to the storage's address, and the local copies are deleted. The storage can be anything that serves files at a public address.</p>
   <div class="figure">
     <dl class="kv">
-      <dt>In the page</dt><dd>&lt;img src="media/pages/brands/showroom-01.avif" …&gt;</dd>
+      <dt>While editing</dt><dd>&lt;img src="media/pages/brands/showroom-01.avif" …&gt;</dd>
+      <dt>Once sent</dt><dd>&lt;img src="https://media.example.com/pages/brands/showroom-01.avif" …&gt;</dd>
       <dt>Optimized</dt><dd>photos to AVIF (WebP with transparency), video to MP4, PDFs compressed</dd>
       <dt>Never replaced</dt><dd>a published file keeps its name; a new version gets a new name</dd>
-      <dt>Upload</dt><dd>one command, set per site, run by GitHub when changes are sent</dd>
+      <dt>Upload</dt><dd>one command, set per site, run by GitHub when changes are sent, before anything is committed</dd>
       <dt>Keys</dt><dd>only as the repo's GitHub secrets; never in a file, a page, a chat or a laptop</dd>
     </dl>
   </div>
@@ -364,11 +363,11 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
 
   const STEPS = [
     {t:"Ask", who:"You", say:"Here's the new showroom photo. Put it at the top of the Brands page.", body:"You attach the photo in the chat, in your own words. No editor, no login, no dashboard."},
-    {t:"Optimize the photo", who:"Your agent", body:"The media script turns whatever you give it into a small, modern file at the size the site allows, and refuses a name that is already taken.", term:`<span class="c">$</span> node .nib/scripts/media.mjs showroom.jpg pages/brands showroom-01\n<span class="c"># 4032 × 3024, 3.8 MB  →  1600 × 1200, 96 KB</span>\n&lt;img src="media/pages/brands/showroom-01.avif" width="1600" height="1200" …&gt;`},
+    {t:"Optimize the photo", who:"Your agent", body:"The media script turns whatever you give it into a small, modern file at the size the site allows, and refuses a name that is already taken.", term:`<span class="c">$</span> node scripts/media.mjs showroom.jpg pages/brands showroom-01\n<span class="c"># 4032 × 3024, 3.8 MB  →  1600 × 1200, 96 KB</span>\n&lt;img src="media/pages/brands/showroom-01.avif" width="1600" height="1200" …&gt;`},
     {t:"Edit the page", who:"Your agent", body:"It finds the place by searching for the text, adds the image with a description and its real size, and touches nothing else.", term:`<span class="c">&lt;!-- brands.html --&gt;</span>\n&lt;img src="media/pages/brands/showroom-01.avif"\n     alt="The new showroom" width="1600" height="1200"&gt;`},
-    {t:"Check", who:"Your agent", body:"The check runs in a second over every page: links, images, headers, media. If something is wrong, the agent fixes it before you see anything.", term:`<span class="c">$</span> node .nib/scripts/check.mjs\n<span class="g">12 pages checked: 0 errors, 0 warnings.</span>`},
+    {t:"Check", who:"Your agent", body:"The check runs in a second over every page: links, images, headers, media. If something is wrong, the agent fixes it before you see anything.", term:`<span class="c">$</span> node scripts/check.mjs\n<span class="g">12 pages checked: 0 errors, 0 warnings.</span>`},
     {t:"Show you", who:"Your agent", body:"The agent opens the page in the local preview. You look, and ask for changes if you want them.", say:"Looks good, I'm done."},
-    {t:"Send for review", who:"Your agent", body:"Only now, because you said you're done: one command commits, opens a pull request, and waits for the host's preview link. GitHub copies the new photo to the storage.", term:`<span class="c">$</span> node .nib/scripts/send.mjs "Add the showroom photo to Brands"\n<span class="g">SENT</span> https://github.com/…/pull/42\n<span class="g">PREVIEW</span> https://edit-showroom-photo.preview.example`},
+    {t:"Send for review", who:"Your agent", body:"Only now, because you said you're done: one command has GitHub copy the new photo to the storage, then commits, opens a pull request, and waits for the host's preview link.", term:`<span class="c">$</span> node scripts/send.mjs "Add the showroom photo to Brands"\n<span class="g">SENT</span> https://github.com/…/pull/42\n<span class="g">PREVIEW</span> https://edit-showroom-photo.preview.example`},
     {t:"Publish", who:"An admin", body:"The admin opens the preview link, then merges. The host copies the files, and the change is live. Nothing was built."}
   ];
   const steplist = document.getElementById("steplist"), stepbody = document.getElementById("stepbody");
