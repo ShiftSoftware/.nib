@@ -1,6 +1,6 @@
 # Status and decisions
 
-**State: active · YYYY-MM-DD.** Live at https://SITE-NAME.<subdomain>.workers.dev
+**State: active · YYYY-MM-DD.** Live at SITE-ADDRESS
 
 ## Decisions
 

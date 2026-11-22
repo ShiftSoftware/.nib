@@ -48,6 +48,9 @@ The repo is the folder you are in (its GitHub address: `git remote get-url origi
 - Replace every placeholder: `SITE-NAME`, `SITE NAME`, `ORG/REPO`, `STORAGE`, `MEDIA-STORAGE-ADDRESS`,
   `YYYY-MM-DD`.
 
+Structure every page as [organize.md](organize.md) says (a `section` with an `id` per block, consistent repeated
+items) and fill its four tables in `AGENTS.md`, so editing agents find content in one search.
+
 ## 3. Check and preview
 
 `node <nib>/scripts/check.mjs` until it prints no errors. Start `node <nib>/scripts/preview.mjs` and show the
@@ -55,7 +58,8 @@ person the site. Ask if it looks right.
 
 ## 4. Publish the first version
 
-- **Empty repo:** commit and push to `main` (the only direct push; `main` is locked in step 5).
+- **Empty repo:** commit, then `git push --no-verify origin main` (the only direct push to `main`, before the
+  lock in step 5; `--no-verify` skips the hook that otherwise refuses it).
 - **Repo with a site:** `node <nib>/scripts/send.mjs "Set up the site with .nib"` and give the person the link to
   review.
 
@@ -66,14 +70,16 @@ Do what you can with `gh`; give the person one line for each step only they can 
 1. **Lock `main`.** Create a ruleset that requires a pull request and blocks force pushes on the default branch:
    `gh api repos/<org>/<repo>/rulesets --method POST --input -` with
    `{"name":"main","target":"branch","enforcement":"active","conditions":{"ref_name":{"include":["~DEFAULT_BRANCH"],"exclude":[]}},"rules":[{"type":"pull_request","parameters":{"required_approving_review_count":0,"dismiss_stale_reviews_on_push":false,"require_code_owner_review":false,"require_last_push_approval":false,"required_review_thread_resolution":false}},{"type":"non_fast_forward"}]}`.
-   If GitHub refuses because of the plan (private repos on GitHub Free), tell the person in one line that locking
-   `main` needs a paid GitHub plan, and record it in `.knowledge/`.
-2. **Hosting.** The person, in the Cloudflare dashboard: Workers & Pages → Create → Import a repository → this
-   repo; no build command; deploy command `npx wrangler deploy`; builds for non-production branches on. Ask them
-   for the site's address when it is live, and put it in `.knowledge/status.md`.
-3. **Media storage.** Ask which storage the site uses, or suggest one the organization already has. Set its public
-   address as `MEDIA_URL` in `wrangler.jsonc`, and the command that uploads one file as `upload` in
-   `.github/workflows/media.yml` (it gets `FILE`, `KEY` and `TYPE`; it runs on GitHub's Ubuntu runner). Name the
+   If GitHub refuses because of the plan (private repos on the free plan), carry on: the Git hook from `sync.mjs`
+   and rule 11 keep agents off `main`. Record it in `.knowledge/`.
+2. **Hosting.** Ask which host serves the site, or suggest one the organization already uses. It must serve
+   `site/public/` exactly as it is (no build command), give every branch a preview link that it posts on the pull
+   request, publish when `main` changes, and serve `/media/...` from the media storage. Set it up with the
+   person, adding only the small settings files that host needs. Name the host in `AGENTS.md`, record the choice
+   in `.knowledge/`, and put the site's address in `.knowledge/status.md`.
+3. **Media storage.** Ask which storage the site uses, or suggest one the organization already has. It needs a
+   public address. Point the host's `/media/` at it, and set `upload` in `.github/workflows/media.yml` to the
+   command that uploads one file (it gets `FILE`, `KEY` and `TYPE`; it runs on GitHub's Ubuntu runner). Name the
    storage in `AGENTS.md` and record the choice in `.knowledge/`.
 4. **Secrets.** List the keys the upload command needs. The person adds each one at
    `https://github.com/<org>/<repo>/settings/secrets/actions/new`, with the name you give. Confirm with

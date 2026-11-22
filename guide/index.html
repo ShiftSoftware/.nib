@@ -249,7 +249,7 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
       <div class="track">
         <span class="box">"done"</span><span class="arrow">→</span>
         <span class="box">pull request</span><span class="arrow">→</span>
-        <span class="box">Cloudflare preview link</span><span class="arrow">→</span>
+        <span class="box">preview link</span><span class="arrow">→</span>
         <span class="box">admin merges</span><span class="arrow">→</span>
         <span class="box live">live</span>
       </div>
@@ -276,7 +276,7 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
     <li><b>Nothing to install in the project.</b><span>No packages. The computer has Git, GitHub CLI, Node.js, ffmpeg and Ghostscript, installed once by the agent.</span></li>
     <li><b>No CMS, plugins or admin panel.</b><span>The content is in the pages. To change it, ask your agent.</span></li>
     <li><b>No code from other websites.</b><span>The agent writes the small piece needed, unless the site allows an exception.</span></li>
-    <li><b>No build or deploy pipelines.</b><span>Cloudflare publishes the files as they are. The one Action only copies media.</span></li>
+    <li><b>No build or deploy pipelines.</b><span>The host publishes the files as they are. The one Action only copies media.</span></li>
     <li><b>Media is optimized and never replaced.</b><span>Everything goes through the media script; a new version gets a new name.</span></li>
     <li><b>Keys live only in GitHub secrets.</b><span>Never in a file, a page, a chat or on a computer.</span></li>
     <li><b>A mistake twice becomes a rule or a check.</b><span>Not a new tool.</span></li>
@@ -333,7 +333,7 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
         {t:"You", end:true},
         {t:"Your agent", agent:true, why:"Understands the request, edits the pages, follows AGENTS.md, runs the check and shows you a preview.", now:"This is the one new layer, and it's the one you talk to."},
         {t:"The files", agent:true, why:"HTML, CSS and JavaScript in site/public, exactly as the browser gets them.", now:"What is in the repo is what is served. Images and video are in the site's storage."},
-        {t:"Host", agent:true, why:"Cloudflare serves the files from close to the visitor.", now:"Copies the files when a change is merged, and gives every branch a preview link. Nothing is built."},
+        {t:"Host", agent:true, why:"The site's host serves the files, from wherever the site chooses.", now:"Copies the files when a change is merged, and gives every branch a preview link. Nothing is built."},
         {t:"Browser", end:true}
       ],
       tools:"Git, Node.js, ffmpeg: installed once by your agent"
@@ -368,8 +368,8 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
     {t:"Edit the page", who:"Your agent", body:"It finds the place by searching for the text, adds the image with a description and its real size, and touches nothing else.", term:`<span class="c">&lt;!-- brands.html --&gt;</span>\n&lt;img src="media/pages/brands/showroom-01.avif"\n     alt="The new showroom" width="1600" height="1200"&gt;`},
     {t:"Check", who:"Your agent", body:"The check runs in a second over every page: links, images, headers, media. If something is wrong, the agent fixes it before you see anything.", term:`<span class="c">$</span> node .nib/scripts/check.mjs\n<span class="g">12 pages checked: 0 errors, 0 warnings.</span>`},
     {t:"Show you", who:"Your agent", body:"The agent opens the page in the local preview. You look, and ask for changes if you want them.", say:"Looks good, I'm done."},
-    {t:"Send for review", who:"Your agent", body:"Only now, because you said you're done: one command commits, opens a pull request, and waits for Cloudflare's preview link. GitHub copies the new photo to the storage.", term:`<span class="c">$</span> node .nib/scripts/send.mjs "Add the showroom photo to Brands"\n<span class="g">SENT</span> https://github.com/…/pull/42\n<span class="g">PREVIEW</span> https://edit-…-site.workers.dev`},
-    {t:"Publish", who:"An admin", body:"The admin opens the preview link, then merges. Cloudflare copies the files, and the change is live. Nothing was built."}
+    {t:"Send for review", who:"Your agent", body:"Only now, because you said you're done: one command commits, opens a pull request, and waits for the host's preview link. GitHub copies the new photo to the storage.", term:`<span class="c">$</span> node .nib/scripts/send.mjs "Add the showroom photo to Brands"\n<span class="g">SENT</span> https://github.com/…/pull/42\n<span class="g">PREVIEW</span> https://edit-showroom-photo.preview.example`},
+    {t:"Publish", who:"An admin", body:"The admin opens the preview link, then merges. The host copies the files, and the change is live. Nothing was built."}
   ];
   const steplist = document.getElementById("steplist"), stepbody = document.getElementById("stepbody");
   let step = 0;
@@ -392,7 +392,7 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
     {q:"Let's use Astro so we don't repeat the header.", pill:'<span class="pill no">no build step</span>', a:"The header is repeated on purpose. I change every copy in one go, and the check fails if any copy differs. Astro would add packages and a build to save typing that I do for you."},
     {q:"Add Tailwind.", pill:'<span class="pill no">no build step</span>', a:"Tailwind needs a build. site.css already has the colours, fonts and spacing as tokens. Tell me what you want to look different and I'll change the stylesheet."},
     {q:"Install a gallery plugin.", pill:'<span class="pill no">no code from other sites</span>', a:"A gallery is a grid of images and a few lines of script. I'll write it into site.css and site.js, so there's nothing to update and nothing that breaks when someone else changes their code."},
-    {q:"Set up GitHub Actions to deploy.", pill:'<span class="pill no">no build or deploy pipelines</span>', a:"There is nothing to build, so a pipeline would only add waiting. Cloudflare is connected to the repo: every branch gets a preview link, and a merge publishes."},
+    {q:"Set up GitHub Actions to deploy.", pill:'<span class="pill no">no build or deploy pipelines</span>', a:"There is nothing to build, so a pipeline would only add waiting. The host is connected to the repo: every branch gets a preview link, and a merge publishes."},
     {q:"Put the new video on the home page.", pill:'<span class="pill done">yes</span>', a:"I'll turn it into a small MP4, add it under a new name, and put it on the home page. If it's still over 25 MB, we link it from YouTube instead."},
     {q:"Here's the storage key, save it in the repo.", pill:'<span class="pill no">keys live in GitHub secrets</span>', a:"I won't put it in a file or this chat. Add it on the repo's GitHub secrets page under the name I give you; only the upload step on GitHub reads it."}
   ];

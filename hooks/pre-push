@@ -1,0 +1,10 @@
+#!/bin/sh
+main=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##')
+main=${main:-main}
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/$main" ]; then
+    echo "Refused: never push to $main. Send changes for review with: node .nib/scripts/send.mjs \"<what changed>\"" >&2
+    exit 1
+  fi
+done
+exit 0

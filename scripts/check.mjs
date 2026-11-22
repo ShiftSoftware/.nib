@@ -60,6 +60,12 @@ for (const p of pages) {
   if (/<style[\s>]/.test(html)) err(name, '<style> block; put it in site.css');
   if (/<base[\s>]/.test(html) && !is404) err(name, 'only 404.html has a <base> tag');
 
+  if (!isPrivate) {
+    for (const tag of html.match(/<section\b[^>]*>/gi) || []) if (!/\sid="[a-z0-9]+(-[a-z0-9]+)*"/.test(tag)) err(name, `<section> without an English, hyphenated id: ${tag}`);
+    const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+    for (const id of new Set(ids.filter((id, i) => ids.indexOf(id) !== i))) err(name, `id="${id}" is used twice`);
+  }
+
   for (const tag of html.match(/<img\b[^>]*>/gi) || []) {
     for (const a of ['alt', 'width', 'height']) if (!new RegExp(`\\s${a}="`).test(tag)) err(name, `<img> without ${a}: ${tag}`);
   }
@@ -92,7 +98,7 @@ for (const p of pages) {
 
 const mediaTypes = new Set(['.avif', '.webp', '.mp4', '.pdf', '.svg', '.ico', '.png']);
 for (const f of walk(pub)) {
-  if (statSync(f).size > MAX_BYTES) err(rel(f), 'larger than 25 MB, the host limit');
+  if (statSync(f).size > MAX_BYTES) err(rel(f), 'larger than 25 MB');
   if (['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif', '.mp4', '.mov', '.pdf'].includes(extname(f).toLowerCase())) warn(rel(f), 'images, video and PDFs go in media/ with media.mjs');
 }
 for (const f of walk(join(root, 'media'))) {

@@ -25,7 +25,7 @@ These instructions are for any agent (Claude, Codex, Kimi, Cursor, Gemini or ano
   | `media/` | Images, video and PDFs, already optimized. Pages link them as `media/...`; on the live site they come from the media storage |
   | `scripts/` | Only this site's extra scripts. `scripts/check.mjs`, if present, runs with the general check |
   | `temp/` | Files people hand over, before they are optimized. Not in Git |
-  | `wrangler.jsonc`, `worker.js` | The Cloudflare settings, and the small Worker that serves `/media/` from the storage |
+  | Hosting settings | Whatever the site's host needs; the site's `AGENTS.md` names the host |
   | `.github/workflows/media.yml` | The only GitHub Action: copies new media to the storage. Never builds or publishes |
 
 ## Who you work for
@@ -56,8 +56,9 @@ Then read this site's `AGENTS.md` and `.knowledge/README.md` if you haven't in t
 
 ## Each request
 
-1. Find the place fast: search for the visible text or the section's `id`, then read about 30 lines around it.
-   Don't read whole pages.
+1. Find the place fast: `node <nib>/scripts/map.mjs "<words from the request>"` gives the file, line and section;
+   read about 30 lines around it. Don't read whole pages. Keep every page easy to find this way: follow
+   [organize.md](organize.md) whenever you add or restructure pages, sections or repeated items.
 2. Make the change, following the page rules below and the site's `AGENTS.md`.
 3. Images, video or PDFs: `node <nib>/scripts/media.mjs <file> <folder> <name>` (see Media).
 4. `node <nib>/scripts/check.mjs`. Fix every error.
@@ -74,7 +75,7 @@ node <nib>/scripts/send.mjs "<one line in English: what changed>"
 ```
 
 It checks, starts a branch if needed (never `main`), commits, brings in the latest `main`, opens or updates the
-pull request, and prints the preview link Cloudflare posts on it (it waits up to five minutes). Act on what it
+pull request, and prints the preview link the site's host posts on it (it waits up to five minutes). Act on what it
 prints:
 
 | It prints | Do |
@@ -116,8 +117,8 @@ anything until it is decided there.
    who wants to change it asks their agent.
 4. **No libraries or files from other websites** in the pages, except what the site's `AGENTS.md` allows. Write
    the small piece of code you need.
-5. **No build or deploy pipelines.** Cloudflare is connected to the repo: a branch gets a preview link, and
-   merging into `main` publishes the files as they are. The one GitHub Action, `media.yml` from `.nib`, only copies
+5. **No build or deploy pipelines.** The site's host is connected to the repo: a branch gets a preview link,
+   and merging into `main` publishes the files as they are. The one GitHub Action, `media.yml` from `.nib`, only copies
    new media to the storage. Add no other.
 6. **Media is optimized, kept in `media/`, and never replaced.** Everything a person gives you goes through
    `media.mjs`. A published file is never replaced: a new version gets a new name. The site's `AGENTS.md` names
@@ -130,7 +131,8 @@ anything until it is decided there.
    not GitHub, dashboards or editors.
 10. **Data that lives in another system stays there.** A live list or a form comes from that system's API or web
     component, not from a copy in the pages.
-11. **`main` is never pushed to directly.** Every change goes to a branch, then a pull request; an admin merges.
+11. **Never push to `main`.** Every change goes to a branch, then a pull request; an admin merges. `sync.mjs`
+    installs a Git hook that refuses a push to `main`; never bypass it.
 
 ## Page rules
 

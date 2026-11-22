@@ -50,7 +50,7 @@ if (!url) {
 const deadline = Date.now() + 5 * 60 * 1000;
 while (Date.now() < deadline) {
   const comments = run('gh', ['pr', 'view', url, '--json', 'comments', '-q', '.comments[].body']).out;
-  const preview = [...comments.matchAll(/https:\/\/[a-z0-9.-]+\.workers\.dev[^\s)|"'<>]*/g)].pop()?.[0];
+  const preview = [...comments.matchAll(/https:\/\/[^\s)|"'<>\]]+/g)].map((m) => m[0]).filter((u) => !/^https:\/\/([a-z0-9-]+\.)*github(usercontent)?\.com\//i.test(u)).pop();
   if (preview) { console.log(`SENT ${url}\nPREVIEW ${preview}`); process.exit(0); }
   await new Promise((r) => setTimeout(r, 15000));
 }

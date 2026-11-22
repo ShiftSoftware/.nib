@@ -16,7 +16,8 @@ ONE LINE: what this site is, who it is for, its languages.
 |---|---|
 | Languages | English (`lang="en"`) |
 | Preview | `node <nib>/scripts/preview.mjs` (port 8300, or the next free one) |
-| Media storage | STORAGE: what it is and its public address (`MEDIA_URL` in `wrangler.jsonc`) |
+| Hosting | HOST: what serves the site, how branches get preview links, and how `/media/` reaches the storage |
+| Media storage | STORAGE: what it is and its public address |
 | Allowed outside files | None |
 
 ## Pages
@@ -43,4 +44,12 @@ One per kind of page, made and kept by the agent (see `.nib/AGENTS.md`, Page rul
 
 ## Components
 
-List the site's blocks here as they are added: name, where to copy it from, notes.
+| Component (class) | Copy it from | Notes |
+|---|---|---|
+
+## Words people use
+
+Words people say that don't appear on the site, and where they point (see `.nib/organize.md`).
+
+| They say | It is |
+|---|---|
