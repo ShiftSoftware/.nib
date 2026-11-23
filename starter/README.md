@@ -17,8 +17,9 @@ I'm not technical: do every step yourself and keep each message to me to one sho
 
 1. Open this folder in your agent and ask for what you want. Attach pictures or files when you have them.
 2. The agent shows you the change on your computer and asks if you're done.
-3. Say you're done. The agent sends your changes for review and gives you a preview link.
-4. An admin reviews and publishes.
+3. Say you're done. The agent sends your changes and gives you a preview link.
+4. Say publish when it looks right. If your account can't publish this site, the site's team reviews and
+   publishes it.
 
 ## For admins
 
