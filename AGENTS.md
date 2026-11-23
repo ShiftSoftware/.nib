@@ -42,7 +42,7 @@ The person asking may have no technical knowledge at all: designers, marketing, 
   want.
 - **Replies are one or two short lines,** in the person's language: what changed and the link to look at. Don't
   explain unless asked. No code, file names, commands, or words like branch, commit, merge, pull request, conflict
-  or repo. Say "your changes", "sent for review", "preview link".
+  or repo. Say "your changes", "preview link", "publish", "sent for review".
 - **Fix problems yourself,** quietly. Tell the person only what they must do, in one line.
 - **When a command you need is blocked or denied, ask the person to allow it.** Say in one line what it does and
   why. Don't work around the block with another tool, and don't hand them the step to do by hand.
@@ -76,18 +76,46 @@ Don't commit or send anything until the person says they are done.
 ## When the person is done
 
 Run the site's send with one line in English saying what changed. It checks, sends new media to the storage
-(see Media), starts a branch if needed (never `main`), commits, brings in the latest `main`, opens or updates the
-pull request, and prints the preview link the site's host posts on it. Act on what it prints:
+(see Media), starts a branch if needed, commits, brings in the latest `main`, pushes (to the person's fork when
+they can't push to the site), opens or updates the pull request, and prints the preview link the site's host
+posts on it. Act on what it prints:
 
 | It prints | Do |
 |---|---|
-| `SENT ... PREVIEW <link>` | Reply in one line: "Sent for review. Preview: <link>" |
+| `SENT ... PREVIEW <link>` | The person can publish (below): reply in one line, "Preview: <link>. Say publish when it looks right." Otherwise: "Sent for review. Preview: <link>" |
+| `SENT ...` with no preview | The same reply without the link. A host may not preview changes sent from a fork |
 | `CHECK FAILED ...` | Fix what the check lists, run it again |
 | `CONFLICT <files>` | Resolve them quietly (below), `git add` them, `git commit --no-edit`, run it again |
+| `MEDIA FAILED no push access` | Tell the person in one line that pictures and files can only be added by someone with access to the site |
 | `MEDIA FAILED ...` | Nothing was sent and the files are still in `media/`. A name already used: add the file again under a new name, change the page, run it again. Anything else: tell the person in one line their images couldn't be uploaded yet and an admin must look at the site's media storage |
 | `OFFLINE ...` | Tell the person in one line their changes are saved and will be sent when they are online |
 
-More changes later go to the same branch and are sent the same way. An admin merges; merging publishes.
+More changes before publishing go to the same branch and are sent the same way.
+
+## Publishing
+
+Merging into `main` publishes. Whoever's GitHub account has push access to the site may publish; GitHub decides,
+not you. `gh api repos/<org>/<repo> --jq .permissions.push` prints `true` for them. The same holds for private and
+public repos:
+
+| The person's account | Their changes |
+|---|---|
+| Can push | They publish themselves |
+| Can read, not push | Go from their fork as a pull request, and someone with push access publishes. A public repo lets anyone do this; a private one only people an admin gave read access, when the organization allows forking private repos |
+| Can't read (a private repo) | Can't be made. Tell them in one line to ask the site's admin to add their GitHub account |
+
+- **"Publish"** from someone who can push: send first if anything is unsent, then
+  `gh pr merge <number> --merge --delete-branch` (`--squash` when the repo allows only that). It deletes the
+  merged branch on GitHub and on the computer; then `git switch main` and `git pull --ff-only`, so the next change
+  starts on a new branch. A merged branch is never reused. Reply in one line: "Published. Live in a few minutes:
+  <site address>".
+- **Straight to `main`,** only when someone who can push asks for it and there is no new media: run the check,
+  commit on `main`, `git pull --ff-only`, `git push`. Never force.
+- **GitHub refuses** a merge or a push: reply "Sent for review; the site's team will publish it." Don't try another
+  way.
+
+Someone working from a fork follows every other rule the same way: the sync on every prompt (it pulls the site,
+not the fork), the check, the preview.
 
 ## Conflicts, quietly
 
@@ -95,7 +123,7 @@ Two people changed the same lines. Never discard anyone's work.
 
 1. Open each file and find the conflict markers.
 2. Keep both changes when they don't contradict (two new sections, two edited sentences in different places).
-3. When they do contradict, keep what is already on `main` (another person's reviewed work) and apply this
+3. When they do contradict, keep what is already on `main` (another person's published work) and apply this
    person's request again on top of it.
 4. Remove every marker, run the check, and commit.
 5. Tell the person nothing unless their change could not be kept as asked; then one line, such as "Someone else
@@ -133,8 +161,9 @@ anything until it is decided there.
    not GitHub, dashboards or editors.
 10. **Data that lives in another system stays there.** A live list or a form comes from that system's API or web
     component, not from a copy in the pages.
-11. **Never push to `main`.** Every change goes to a branch, then a pull request; an admin merges. The site's sync
-    installs a Git hook that refuses a push to `main`; never bypass it.
+11. **Publishing follows GitHub access.** Only someone whose account can push publishes: by merging their pull
+    request, or by pushing to `main` when they ask (see Publishing). Everyone else sends from their fork. Never
+    force-push to `main` or delete it, and never work around GitHub refusing a push or a merge.
 12. **`.nib` is read-only in a site.** Never edit, add, delete, commit or switch branches in a site's `.nib`, and
     never change or remove what ties the site to it: the hooks in `.claude/settings.json`, the `.nib` lines in
     `AGENTS.md`, `.nib/` in `.gitignore`. The hooks refuse such edits and undo them, the sync resets `.nib` to

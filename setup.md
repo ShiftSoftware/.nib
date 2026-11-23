@@ -22,8 +22,11 @@ somewhere else. Each site keeps its own copy of `.nib` in a `.nib` folder inside
    `gh auth login --hostname github.com --git-protocol https --web` and tell the person the one-time code to enter
    in the browser. Then `gh auth setup-git`.
 3. **The site.** Ask for the site's address if they didn't give it. Clone it with `gh repo clone <Org>/<Repo>` to
-   `<repos>/<Org>/<Repo>` (named exactly as on GitHub), or pull it if it is there. If they have no access, tell
-   them to ask the site's admin to add their GitHub account, and stop.
+   `<repos>/<Org>/<Repo>` (named exactly as on GitHub), or pull it if it is there. If it can't be cloned (a
+   private repo they have no access to), tell them to ask the site's admin to add their GitHub account, and stop.
+   If `gh api repos/<Org>/<Repo> --jq .permissions.push` isn't `true`, run `gh repo fork --remote --remote-name fork`
+   in the site's folder: their changes go from their own copy, and `origin` stays the site. If GitHub refuses the
+   fork (a private repo whose organization doesn't allow it), tell them to ask the site's admin, and stop.
 4. **.nib and the site's tools.** The site lists its commands in its `AGENTS.md`, under Commands. From the site's
    folder, run its sync (`node scripts/sync.mjs` in most sites): it clones `.nib` into the `.nib` folder.
 5. **Everything else.** Run the site's doctor if it has one (`node scripts/doctor.mjs`). It lists each missing or

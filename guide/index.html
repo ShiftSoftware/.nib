@@ -249,11 +249,11 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
         <span class="box">"done"</span><span class="arrow">→</span>
         <span class="box">pull request</span><span class="arrow">→</span>
         <span class="box">preview link</span><span class="arrow">→</span>
-        <span class="box">admin merges</span><span class="arrow">→</span>
+        <span class="box">publish</span><span class="arrow">→</span>
         <span class="box live">live</span>
       </div>
     </div>
-    <p class="hint"><code>main</code> is locked: a merge is the only way to it, and a merge publishes.</p>
+    <p class="hint">Whoever's GitHub account can push publishes; everyone else sends from a fork for them to publish.</p>
   </div>
 </section>
 
@@ -281,7 +281,7 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
     <li><b>A mistake twice becomes a rule or a check.</b><span>Not a new tool.</span></li>
     <li><b>You never leave your agent.</b><span>You see changes in a preview and get a preview link, not GitHub or a dashboard.</span></li>
     <li><b>Live data stays in its system.</b><span>Lists and forms come from that system, not from a copy.</span></li>
-    <li><b><code>main</code> is never pushed to.</b><span>Every change goes through a pull request; an admin merges.</span></li>
+    <li><b>Publishing follows GitHub access.</b><span>If your account can push, you publish. If not, your changes go from your fork and the site's team publishes.</span></li>
   </ol>
   <p class="hint">Asking for something these rules forbid isn't wrong. It becomes a proposal in the site's <code>.knowledge/</code>, and the site's owner decides.</p>
 </section>
@@ -302,7 +302,7 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
     wp: {
       chain: [
         {t:"You", end:true},
-        {t:"Admin login", why:"Let people who can't write code edit the site safely.", now:"You ask your agent. Access is your GitHub access, and nothing goes live until an admin merges."},
+        {t:"Admin login", why:"Let people who can't write code edit the site safely.", now:"You ask your agent. Access is your GitHub access: only accounts that can push publish."},
         {t:"Page builder", why:"Let people lay out pages without writing HTML.", now:"The agent writes the HTML, using the site's own components, so pages stay consistent."},
         {t:"Theme", why:"Give every page the same look without repeating it by hand.", now:"One stylesheet. The agent keeps the header and footer identical on every page, and the check confirms it."},
         {t:"Plugins", why:"Add features (SEO, galleries, forms, caching, security) without writing code.", now:"The agent writes the few lines a feature needs. No plugins to update, and none to be hacked through."},
@@ -368,7 +368,7 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
     {t:"Check", who:"Your agent", body:"The check runs in a second over every page: links, images, headers, media. If something is wrong, the agent fixes it before you see anything.", term:`<span class="c">$</span> node scripts/check.mjs\n<span class="g">12 pages checked: 0 errors, 0 warnings.</span>`},
     {t:"Show you", who:"Your agent", body:"The agent opens the page in the local preview. You look, and ask for changes if you want them.", say:"Looks good, I'm done."},
     {t:"Send for review", who:"Your agent", body:"Only now, because you said you're done: one command has GitHub copy the new photo to the storage, then commits, opens a pull request, and waits for the host's preview link.", term:`<span class="c">$</span> node scripts/send.mjs "Add the showroom photo to Brands"\n<span class="g">SENT</span> https://github.com/…/pull/42\n<span class="g">PREVIEW</span> https://edit-showroom-photo.preview.example`},
-    {t:"Publish", who:"An admin", body:"The admin opens the preview link, then merges. The host copies the files, and the change is live. Nothing was built."}
+    {t:"Publish", who:"You, or the site's team", body:"If your GitHub account can push, you say publish and the agent merges. If not, the site's team opens the preview link and publishes. The host copies the files, and the change is live. Nothing was built.", say:"Publish."}
   ];
   const steplist = document.getElementById("steplist"), stepbody = document.getElementById("stepbody");
   let step = 0;
