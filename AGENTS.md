@@ -217,7 +217,8 @@ site's `AGENTS.md` gives its address (`<site>` below) and its share image.
 - `<link rel="canonical" href="<site>/<path>">`: the page's one full address, as the host serves it.
 - Sharing: `og:type` (`website`; `article` for news), `og:site_name`, `og:title`, `og:description`, `og:url` (the
   canonical address), `og:locale` (`ru_RU`, `en_US`), `og:image` (a full address; the page's own picture, or the
-  site's share image, 1200 × 630, in `media/site/`) with `og:image:width` and `og:image:height`, and
+  site's share image, 1200 × 630, in `media/site/`, a JPEG: not every app that shows link previews reads AVIF
+  or WebP) with `og:image:width` and `og:image:height`, and
   `<meta name="twitter:card" content="summary_large_image">`.
 - `<link rel="icon">` and `<meta name="theme-color">`, the same on every page.
 - Structured data where it fits, one `<script type="application/ld+json">` in the `<head>`: `Organization` or
