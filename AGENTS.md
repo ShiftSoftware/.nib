@@ -74,6 +74,17 @@ resolves them, when the changes are sent.
 In Claude Code the site's hooks do all of this by themselves, on every session start, prompt and command. When
 "OK syncing .nib and the site" is already in your context for this prompt, don't run it again.
 
+**A new conversation starts from what is live.** At its start the sync goes back to `main` and brings it up to date
+(Claude Code does this by itself; other agents run the sync with `--fresh` once). Changes sent earlier stay on their
+own branch, and the next send makes a new one. Don't mention it. Two cases need you:
+
+- **The sync prints `UNSENT ...`:** changes that were never sent are still here, from before or from another
+  conversation open now. Ask the person, in one line: "There are unsent changes from before. Continue with them, or
+  start fresh?" Continue: carry on as they are. Fresh: put them away first, never throw them out: on `main`,
+  `git switch -c saved/<date>-<words>`; then `git add -A`, `git commit -m "Set aside"`, `git switch main`.
+- **The person wants to go on with changes they already sent:** `gh pr list --author @me` finds them, then
+  `git switch <branch>`.
+
 **When the sync prints `SETUP ...`,** the site now needs something this computer doesn't have yet: a tool or a
 newer version that arrived with someone else's change, such as Hugo on a computer set up before the site used it.
 Before anything else, run the site's doctor, run the commands it lists yourself, and repeat until it prints `OK`.
