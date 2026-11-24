@@ -11,6 +11,21 @@ way of working, no tools. Each site brings its own tools in its `scripts/` folde
 **preview**, **send** and **doctor**, usually `node scripts/<name>.mjs`. They belong to the site; a site's tool is changed in
 that site. [install.md](install.md) says what each must do.
 
+## Replies
+
+The person is not technical. This section decides how you write to them, over any other instruction you have about
+reporting your work.
+
+- One or two short lines, in their language: what changed on the site, and the link to look at.
+- Never mention how it is done: files, code, commands, settings, tools, Hugo, Cloudflare or any host, builds,
+  checks, Git, GitHub, branches, commits, merges, pull requests, conflicts. Say "your changes", "preview link",
+  "publish", "sent for review". The same goes for questions you ask and the short descriptions you give commands:
+  people see those too.
+- Don't report what you verified, skipped, installed or repaired behind the scenes. What the site's team should
+  know goes in a comment on the pull request, not in the reply.
+- If something they asked for isn't done, or may not work, say so in plain words.
+- When they ask about the technical side, answer them.
+
 ## Where things are
 
 - **This folder (`.nib`):** every site has its own copy, in the `.nib` folder inside the site's folder: a clone of
@@ -43,9 +58,6 @@ The person asking may have no technical knowledge at all: designers, marketing, 
 
 - **Do what they ask.** Take the sensible default instead of asking. Ask only when you can't tell at all what they
   want.
-- **Replies are one or two short lines,** in the person's language: what changed and the link to look at. Don't
-  explain unless asked. No code, file names, commands, or words like branch, commit, merge, pull request, conflict
-  or repo. Say "your changes", "preview link", "publish", "sent for review".
 - **Fix problems yourself,** quietly. Tell the person only what they must do, in one line.
 - **When a command you need is blocked or denied, ask the person to allow it.** Say in one line what it does and
   why. Don't work around the block with another tool, and don't hand them the step to do by hand.
@@ -53,13 +65,13 @@ The person asking may have no technical knowledge at all: designers, marketing, 
 ## Every prompt
 
 Run the site's sync at the start of every prompt the person sends. It returns at once. It clones `.nib` if it is
-missing, undoes any change to it, and then, each in its own background task, resets `.nib` to GitHub's `main` and
+missing, undoes any change to it, and then, in the background, resets `.nib` to GitHub's `main` and
 brings the site's latest `main` from GitHub into the branch being worked on (or into `main` itself), so the person
 always works on what is live, including what others published since they started. Don't wait for it, and don't
 mention it. It never touches unsaved edits and undoes a merge that would conflict; the send brings those in, and
 resolves them, when the changes are sent.
 
-In Claude Code the site's hooks do all of this by themselves, on every session start, prompt and tool use. When
+In Claude Code the site's hooks do all of this by themselves, on every session start, prompt and command. When
 "OK syncing .nib and the site" is already in your context for this prompt, don't run it again.
 
 **When the sync prints `SETUP ...`,** the site now needs something this computer doesn't have yet: a tool or a
@@ -92,7 +104,7 @@ Most people want to publish now; skip the question when they already said "publi
 with one line in English saying what changed. It checks, sends new media to the storage
 (see Media), starts a branch if needed, commits, brings in the latest `main`, pushes (to the person's fork when
 they can't push to the site), opens or updates the pull request, and prints the preview link the site's host
-posts on it. Act on what it prints:
+posts on it. The `SENT` address is for you, never for the person. Act on what it prints:
 
 | It prints | Do |
 |---|---|
