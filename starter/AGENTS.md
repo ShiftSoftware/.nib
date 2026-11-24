@@ -2,6 +2,9 @@
 
 ONE LINE: what this site is, who it is for, its languages.
 
+@.nib/AGENTS.md
+@.knowledge/README.md
+
 ## First, every session and every request
 
 1. `.nib` is the `.nib` folder inside this one: the general rules. It is read-only: never change anything in it

@@ -32,7 +32,7 @@ The repo is the folder you are in (its GitHub address: `git remote get-url origi
   | `site/content/` | One file per page: `title` and `description` between `---` lines, then only what the page has inside `<main>`. The home page is `_index.html`; `404.html` is a page too. Pages flat, no subfolders. A page that is kept but not published has `draft: true` |
   | `site/layouts/` | `all.html`, the frame of every page (`<html>`, `<head>`, `<body>`, `<main>`), and in `_partials/` one plain HTML file each for what the pages share: `head.html` (builds the search and share tags from the page's title and description), `header.html` with the navigation, `footer.html`. `sitemap.xml` builds the sitemap from the pages. Nothing else unless the site needs it (rule 1) |
   | `site/static/` | Copied as it is: `site.css`, `site.js`, fonts, `robots.txt`, the host's own files |
-  | `site/hugo.toml` | `baseURL` (the site's address), `title`, the language, `uglyURLs = true` so `about.html` is built as `about.html`, the kinds of page Hugo makes by itself turned off (`taxonomy`, `term`, `rss`, `section`, `404`), `disableHugoGeneratorInject = true`, and the lowest Hugo version the site needs |
+  | `site/hugo.toml` | `baseURL` (the site's address), `title`, the language, `uglyURLs = true` so `about.html` is built as `about.html`, the kinds of page Hugo makes by itself turned off (`taxonomy`, `term`, `rss`, `section`, `404`), `disableHugoGeneratorInject = true`, `allowContent` under `[security]` (Hugo 0.162 and newer refuse HTML pages without it), and the lowest Hugo version the site needs |
   | `site/public/` | Not in the repo: the host builds it from the four above when it publishes |
   | `site/templates/` | One starter per kind of page, made from the existing pages (a plain page, a product, an article) |
   | `media/` | Not in Git. Media already at a public address keeps its links. Media that is only in the repo stays where it is for this first change and goes through the media command in a second change, after step 5 (the upload needs the storage) |
@@ -54,12 +54,15 @@ The repo is the folder you are in (its GitHub address: `git remote get-url origi
 
 Every site has its own tools in `scripts/`, small Node.js scripts with nothing to install (rule 2). Copy them
 from another `.nib` site the organization has (ask the person which), or write them. They belong to this site:
-change them here, and list them in `AGENTS.md` under Commands. Each must do this:
+change them here, and list them in `AGENTS.md` under Commands. Every program a tool starts, in the background or
+not, is started without a window (`windowsHide: true` in Node; Windows otherwise flashes one for each) and never
+waits for a password (`GIT_TERMINAL_PROMPT=0`). What runs on every prompt starts as few programs as it can. Each
+tool must do this:
 
 | Tool | What it must do |
 |---|---|
-| sync | Every prompt, returning at once: print `SETUP ...` when the doctor has not passed on this computer since the doctor itself last changed (below); clone `.nib` into `.nib/` if it is missing, undo any change to it, then in the background reset it to GitHub's `main`, and fetch `origin` (never a fork) and bring its default branch into the current branch: fast-forward when possible, otherwise a merge; skip it while a merge is in progress, leave it when Git refuses because of unsaved edits, and `git merge --abort` a merge that conflicts. With `--rules`, print `.nib/AGENTS.md`, the site's `AGENTS.md` and `.knowledge/README.md`. Print `OK syncing .nib and the site` |
-| guard | Claude Code hook: refuse an edit inside `.nib/` before it happens, and undo any change to `.nib/` after each tool (exit code 2 with a one-line reason) |
+| sync | Every prompt, returning at once: print `SETUP ...` when the doctor has not passed on this computer since the doctor itself last changed (below); clone `.nib` into `.nib/` if it is missing, undo any change to it, then in the background reset it to GitHub's `main`, and fetch `origin` (never a fork) and bring its default branch into the current branch: fast-forward when possible, otherwise a merge; skip it while a merge is in progress, leave it when Git refuses because of unsaved edits, and `git merge --abort` a merge that conflicts. Print the Replies section of `.nib/AGENTS.md` on every prompt. With `--rules`, also name the files to read (`.nib/AGENTS.md`, `AGENTS.md`, `.knowledge/README.md`) instead of printing them: Claude Code drops hook output over 10,000 characters. Print `OK syncing .nib and the site` |
+| guard | Claude Code hook: refuse an edit inside `.nib/` before it happens, and undo any change to `.nib/` after each command the agent runs (exit code 2 with a one-line reason) |
 | map | Reads the sources (`site/content/`, `site/layouts/`, `site/static/`, `site/templates/`). Given words: every file, line and section where they appear, saying when a line is in a part every page shares. Without words: every page, in every folder, with its title and sections ([organize.md](organize.md)) |
 | media | Optimize a file into `media/<folder>/<name>` (`site/static/media/<folder>/<name>` in a site without a storage): photos to AVIF (WebP with transparency), video to MP4 at most 1920 wide, PDFs compressed, SVG and ICO kept. Keep the original in `temp/`. Refuse a name already used, on the computer or at the storage's address. Refuse anything over 25 MB. Print the tag with the real size |
 | check | Build the pages first, the way the host will, into a folder under `temp/`, and stop with Hugo's own message when it fails or is not installed. Then, on the built pages: the page rules in `.nib/AGENTS.md` (names, one `h1`, `lang`, charset, viewport, title, no inline styles, a `section` id per block, unique ids, `img` with `alt`, `width` and `height`, links that resolve (relative ones, or from `/` in a site with folders), pages in folders, the search and share tags of every public page (title, description, canonical, `og:` tags) and `sitemap.xml` listing every public page and no page with `noindex`, templates, the home page, `404.html`), no script or stylesheet from another website that the site's `AGENTS.md` doesn't allow, media names, types and sizes, `.nib/`, `temp/`, `site/public/` and `media/` ignored by Git, no media in Git when the site has a storage, the hooks and the `.nib` lines in `AGENTS.md` present, `.nib` unchanged |
@@ -70,7 +73,8 @@ change them here, and list them in `AGENTS.md` under Commands. Each must do this
 Also part of the site:
 
 - `.claude/settings.json` hooks: `SessionStart` runs the sync with `--rules`; `UserPromptSubmit` runs the sync;
-  `PreToolUse` (`Edit|Write|MultiEdit|NotebookEdit`) and `PostToolUse` (`.*`) run the guard.
+  `PreToolUse` (`Edit|Write|MultiEdit|NotebookEdit`) and `PostToolUse` (`Bash|PowerShell`) run the guard. Other tools
+  can't change `.nib/` without the first hook seeing it, or are undone by the next sync.
 - With a media storage, `.github/workflows/media.yml`: the one Action. Started by the send, it copies the new
   files to the storage with the repo's secrets, refuses to replace a file that is already there, and removes what
   the send handed it.
@@ -80,6 +84,7 @@ Also part of the site:
 - `AGENTS.md`: start from the starter's. Fill in the site's name, commands, languages, pages, media folders and
   sizes, components and allowed outside files, from the existing rules and pages. Leave out what
   `.nib/AGENTS.md` already says.
+- Keep the starter's two import lines at the top of `AGENTS.md`: they are how Claude Code loads all the rules.
 - `CLAUDE.md`: the one line `@AGENTS.md`. Remove any other `CLAUDE.md` content after moving it into `AGENTS.md`.
 - `.knowledge/`: start from the starter's. Move the repo's plans, status, decisions and open questions there, and
   write down every way the site differs from `.nib`.
