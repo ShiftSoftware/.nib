@@ -25,6 +25,8 @@ every page so that it can, and keep it that way on every change.
 - **Text that changes often** (dates, prices, phone numbers, opening hours) is written once per page where
   possible, inside an element with a clear class (`<time class="close-date">`), so one search finds every copy.
 - **Page files** are named after what they are, in English: `about.html`, `dealers.html`, `product-corolla.html`.
+  A topic with several pages gets a folder named after it (`about/index.html`, `about/team.html`; see the page
+  rules in `AGENTS.md`), and the **Pages** table lists them by folder.
 - **Styles** in `site.css` follow the order of the page, one block per component, named after the component's
   class (`.dealer`, `.dealer-list`), so the look of a block is found by its class.
 

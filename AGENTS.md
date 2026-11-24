@@ -64,7 +64,8 @@ Then read this site's `AGENTS.md` and `.knowledge/README.md` if you haven't in t
 1. Find the place fast: the map, given words from the request, gives the file, line and section; read about 30
    lines around it. Don't read whole pages. Keep every page easy to find this way: follow
    [organize.md](organize.md) whenever you add or restructure pages, sections or repeated items.
-2. Make the change, following the page rules below and the site's `AGENTS.md`.
+2. Make the change, following the page rules below and the site's `AGENTS.md`. Then bring the page's search and
+   share tags up to date (see Search engines and sharing): the person never asks for them, every page needs them.
 3. Images, video or PDFs: the media command (see Media).
 4. The check. Fix every error.
 5. Make sure the preview runs, in the background. It prints the address, or says
@@ -75,14 +76,16 @@ Don't commit or send anything until the person says they are done.
 
 ## When the person is done
 
-Run the site's send with one line in English saying what changed. It checks, sends new media to the storage
+When the person can publish (see Publishing), ask once, in one line: "Publish now, or see a preview link first?"
+Most people want to publish now; skip the question when they already said "publish". Then run the site's send
+with one line in English saying what changed. It checks, sends new media to the storage
 (see Media), starts a branch if needed, commits, brings in the latest `main`, pushes (to the person's fork when
 they can't push to the site), opens or updates the pull request, and prints the preview link the site's host
 posts on it. Act on what it prints:
 
 | It prints | Do |
 |---|---|
-| `SENT ... PREVIEW <link>` | The person can publish (below): reply in one line, "Preview: <link>. Say publish when it looks right." Otherwise: "Sent for review. Preview: <link>" |
+| `SENT ... PREVIEW <link>` | They chose publish now: publish at once (below), without waiting for the preview. They chose a preview: "Preview: <link>. Say publish when it looks right." They can't publish: "Sent for review. Preview: <link>" |
 | `SENT ...` with no preview | The same reply without the link. A host may not preview changes sent from a fork |
 | `CHECK FAILED ...` | Fix what the check lists, run it again |
 | `CONFLICT <files>` | Resolve them quietly (below), `git add` them, `git commit --no-edit`, run it again |
@@ -150,10 +153,12 @@ anything until it is decided there.
 5. **No build or deploy pipelines.** The site's host is connected to the repo: a branch gets a preview link,
    and merging into `main` publishes the files as they are. The site's one GitHub Action only copies new media to
    the storage. Add no other.
-6. **Media is optimized, never kept in Git, and never replaced.** Everything a person gives you goes through the
-   site's media command and waits in `media/`, which Git ignores. When the changes are sent, it goes to the media
-   storage before anything is committed, and the pages link the storage's address. A published file is never
-   replaced: a new version gets a new name. The site's `AGENTS.md` names its media storage.
+6. **Media is optimized and never replaced.** Everything a person gives you goes through the site's media
+   command. With a media storage, it waits in `media/`, which Git ignores, and goes to the storage when the
+   changes are sent, before anything is committed; the pages link the storage's address. A site without a
+   storage yet keeps the optimized files in the repo, in `site/public/media/`, linked as `media/...`, and says so
+   in its `AGENTS.md` and `.knowledge/`; they move to the storage when it is ready. A published file is never
+   replaced: a new version gets a new name. The site's `AGENTS.md` names its media storage, or says it has none.
 7. **Keys live only in the repo's GitHub secrets.** Never in a file, a page, a chat or on the person's computer. A
    site that needs a key somewhere else records where and why in its `.knowledge/`.
 8. **When you get something wrong twice, add a rule or a check:** in the site's `AGENTS.md` or its check. If it applies to every site, propose it to `.nib`.
@@ -174,13 +179,20 @@ anything until it is decided there.
 
 - **Templates are yours to keep.** Each site has one template in `site/templates/` per kind of page: a plain
   page, a product, an article, a branch. Every new page starts from the template of its kind: copy it into
-  `site/public/`, keep its `<head>`, header and footer, fill in the main part. When a new kind of page is needed,
+  `site/public/` or the page's folder, keep its `<head>`, header and footer, fill in the main part. When a new kind of page is needed,
   make its template first, from the site's existing pages and components, then the page from it. When a shared
   block (header, footer, a component) changes, change the templates in the same change. List the templates in
   the site's `AGENTS.md`. The person never needs to know templates exist.
 - Page names are lower-case English words with hyphens (`after-sales.html`).
-- All pages sit directly in `site/public/`. Links are relative file names (`about.html`, `index.html#contact`).
-  Never a path starting with `/`, except in `404.html`, which has `<base href="/">`.
+- **Folders by topic.** A small site keeps its pages directly in `site/public/`. When a topic has more than one
+  page (about, news, products, branches) give it a folder named after it, with `index.html` as its main page:
+  `about/index.html`, `about/history.html`, `about/team.html`. Do it when a topic gets its second page, or when the
+  site passes about ten pages: move the pages in their own change, with redirects from the old addresses (see
+  Search engines and sharing). The site's `AGENTS.md` says whether it uses folders.
+- **Links.** Without folders, links are relative file names (`about.html`, `index.html#contact`), never a path
+  starting with `/`, except in `404.html`, which has `<base href="/">`. With folders, every link and file path
+  starts with `/` and leaves out `.html` and `index.html` (`/about/history`, `/#contact`, `/site.css`), so the
+  header and footer stay identical at every depth. Switch the whole site at once.
 - The blocks between `<!-- HEADER -->` and `<!-- /HEADER -->`, and `<!-- FOOTER -->` and `<!-- /FOOTER -->`, are
   identical on every page of the same language. Change one, copy it to all; the check compares them.
 - Every page has `<html lang="...">`, `<meta charset="utf-8">`, the viewport meta tag, a `<title>`, and exactly
@@ -194,6 +206,30 @@ anything until it is decided there.
 - A picture given as a design reference is never added to the site. Take its layout, not its colours or fonts.
 - Never write personal data the site doesn't already show publicly.
 
+## Search engines and sharing
+
+Every public page carries these in its `<head>`, kept true to what the page says. Add them to a new page, fix
+them on every change that alters a page's subject, title or address, and keep them in every template. The
+site's `AGENTS.md` gives its address (`<site>` below) and its share image.
+
+- `<title>`: the page's own name, then the site's name; unique, about 60 characters at most.
+- `<meta name="description">`: one sentence, at most about 155 characters, saying what is on this page.
+- `<link rel="canonical" href="<site>/<path>">`: the page's one full address, as the host serves it.
+- Sharing: `og:type` (`website`; `article` for news), `og:site_name`, `og:title`, `og:description`, `og:url` (the
+  canonical address), `og:locale` (`ru_RU`, `en_US`), `og:image` (a full address; the page's own picture, or the
+  site's share image, 1200 × 630, in `media/site/`) with `og:image:width` and `og:image:height`, and
+  `<meta name="twitter:card" content="summary_large_image">`.
+- `<link rel="icon">` and `<meta name="theme-color">`, the same on every page.
+- Structured data where it fits, one `<script type="application/ld+json">` in the `<head>`: `Organization` or
+  `WebSite` on the home page, `Event`, `Article`, `FAQPage`, `Product`, `LocalBusiness`. It is data, not
+  behaviour, so it is the one script allowed outside `site.js`. Only what the page itself shows.
+- A multilingual site: `<link rel="alternate" hreflang="...">` to each language's version of the page.
+- `site/public/sitemap.xml` lists every public page by its canonical address; `robots.txt` allows all and names
+  the sitemap. A new, moved or removed page changes the sitemap in the same change. A moved or removed page gets
+  a redirect from its old address in the host's redirect file (`_redirects` on Cloudflare and Netlify).
+- `404.html`, `site/private/` and a site not yet open to search engines carry
+  `<meta name="robots" content="noindex">`; the site's `AGENTS.md` says when a whole site is kept out.
+
 ## Media
 
 The site's media command takes the file, a folder and a name, and a width or crop when the site's `AGENTS.md`
@@ -206,6 +242,8 @@ asks for one.
 - It refuses a name already used, on the computer or in the storage, and prints the `<img>` or `<video>` tag (with the real size) to put in the
   page; add the `alt`.
 - No file over 25 MB, so pages stay fast. Longer video goes on YouTube.
+- A site without a storage: the media command writes to `site/public/media/` and the files are committed with
+  the pages (rule 6). Everything below applies once it has one.
 - The preview shows `media/` straight from the computer. When the changes are sent, the send hands the new files
   to GitHub without committing them, GitHub copies them to the storage with the repo's secrets (keys never come to
   the computer, rule 7), the pages' `media/...` links become the storage's address, and the local copies are

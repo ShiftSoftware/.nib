@@ -17,7 +17,11 @@ ONE LINE: what this site is, who it is for, its languages.
 |---|---|
 | Languages | English (`lang="en"`) |
 | Hosting | HOST: what serves the site and how branches get preview links |
-| Media storage | STORAGE: what it is and its public address |
+| Media storage | STORAGE: what it is and its public address; or "none yet: optimized media in `site/public/media/`" |
+| Address | https://ADDRESS, the canonical address every page's search and share tags use |
+| Share image | `media/site/share.jpg` (1200 × 630), for pages without their own picture |
+| Folders | No: every page directly in `site/public/`, relative links. (Yes: pages by topic in folders, links from `/`) |
+| Search engines | Open. (Or: kept out until launch, `noindex` on every page) |
 | Allowed outside files | None |
 
 ## Commands
