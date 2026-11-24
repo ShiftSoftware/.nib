@@ -193,7 +193,7 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
     <div class="stat"><b>1</b><span>line to paste into your agent to set up a repo</span></div>
     <div class="stat"><b>11</b><span>rules in <code>AGENTS.md</code> that every agent follows</span></div>
     <div class="stat"><b>0</b><span>tools in <code>.nib</code>: each site keeps its own small scripts (sync, check, preview, media, send)</span></div>
-    <div class="stat"><b>0</b><span>frameworks, build steps, databases or admin panels</span></div>
+    <div class="stat"><b>0</b><span>frameworks, bundlers, databases or admin panels</span></div>
     <div class="stat"><b>1</b><span>GitHub Action, and it only copies new media to storage</span></div>
     <div class="stat"><b>Any</b><span>agent: Claude, Codex, Kimi, Cursor or another</span></div>
   </div>
@@ -229,8 +229,8 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
 
 <section aria-labelledby="s-release">
   <span class="eyebrow">Publishing</span>
-  <h2 id="s-release">With nothing to build, there is nothing to wait for</h2>
-  <p>A cloud pipeline spends most of its time getting ready: waiting for a machine, installing packages, building. With plain files, the host only copies them.</p>
+  <h2 id="s-release">With almost nothing to build, there is almost nothing to wait for</h2>
+  <p>A cloud pipeline spends most of its time getting ready: waiting for a machine, installing packages, building. Here the host runs one command, Hugo, which joins the pages to their shared parts in a fraction of a second, and copies them.</p>
   <div class="figure lanes">
     <div class="lane">
       <div class="lane-head"><h3>Cloud pipeline</h3><span class="pill no">we avoid this</span></div>
@@ -271,7 +271,7 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
   <span class="eyebrow">The rules, short</span>
   <h2 id="s-rules">Eleven rules every agent follows</h2>
   <ol class="rules">
-    <li><b>No build step.</b><span>No framework, templating or bundler. What is in the repo is what is served.</span></li>
+    <li><b>Hugo, and nothing else.</b><span>When the host publishes, Hugo adds the head, menu and footer to each plain HTML page. No framework or bundler.</span></li>
     <li><b>Nothing to install in the project.</b><span>No packages. The computer has Git, GitHub CLI, Node.js, ffmpeg and Ghostscript, installed once by the agent.</span></li>
     <li><b>No CMS, plugins or admin panel.</b><span>The content is in the pages. To change it, ask your agent.</span></li>
     <li><b>No code from other websites.</b><span>The agent writes the small piece needed, unless the site allows an exception.</span></li>
@@ -304,7 +304,7 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
         {t:"You", end:true},
         {t:"Admin login", why:"Let people who can't write code edit the site safely.", now:"You ask your agent. Access is your GitHub access: only accounts that can push publish."},
         {t:"Page builder", why:"Let people lay out pages without writing HTML.", now:"The agent writes the HTML, using the site's own components, so pages stay consistent."},
-        {t:"Theme", why:"Give every page the same look without repeating it by hand.", now:"One stylesheet. The agent keeps the header and footer identical on every page, and the check confirms it."},
+        {t:"Theme", why:"Give every page the same look without repeating it by hand.", now:"One stylesheet, and one file each for the head, the menu and the footer, which Hugo adds to every page."},
         {t:"Plugins", why:"Add features (SEO, galleries, forms, caching, security) without writing code.", now:"The agent writes the few lines a feature needs. No plugins to update, and none to be hacked through."},
         {t:"Server code", why:"Assemble each page on the server when someone asks for it.", now:"Pages are already whole files. Nothing runs on the server."},
         {t:"Database", why:"Store content so the admin panel can edit it.", now:"Content is in the pages, in Git, with the full history of every change."},
@@ -318,10 +318,10 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
         {t:"You", end:true},
         {t:"A developer", why:"Only a developer can work the toolchain below.", now:"Everyone has an agent that does the developer's typing, for a developer and a non-developer alike."},
         {t:"Content files or headless CMS", why:"Keep text apart from code so non-developers can edit it.", now:"The text is in the pages. Splitting it out adds a second place to change for every new design."},
-        {t:"Components", why:"Write the header once and reuse it, so it's never repeated by hand.", now:"Repeating is fine. The agent edits every copy, and the check catches any copy that differs."},
+        {t:"Components", why:"Write the header once and reuse it, so it's never repeated by hand.", now:"The head, the menu and the footer are written once, in plain HTML, and Hugo adds them to every page. Everything else stays in the page."},
         {t:"npm packages", why:"Reuse code others wrote instead of writing it.", now:"Hundreds of packages to update and trust, to save a few lines the agent writes in seconds."},
-        {t:"The build", why:"Compile, bundle and optimise many source files into what the browser wants.", now:"We write what the browser wants in the first place. Modern browsers load the files directly."},
-        {t:"Cloud pipeline", why:"Build in a clean, shared place, not on one person's laptop.", now:"There is nothing to build. The host copies the files when a change is merged."},
+        {t:"The build", why:"Compile, bundle and optimise many source files into what the browser wants.", now:"We write what the browser wants in the first place. The only building is Hugo joining each page to the shared parts, in a fraction of a second."},
+        {t:"Cloud pipeline", why:"Build in a clean, shared place, not on one person's laptop.", now:"No pipeline of our own. When a change is merged, the host runs Hugo and copies the pages."},
         {t:"Hosting", why:"Serve the built files.", now:"Still here. The host serves our files as they are."},
         {t:"Browser", end:true}
       ],
@@ -331,8 +331,8 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
       chain: [
         {t:"You", end:true},
         {t:"Your agent", agent:true, why:"Understands the request, edits the pages, follows AGENTS.md, runs the check and shows you a preview.", now:"This is the one new layer, and it's the one you talk to."},
-        {t:"The files", agent:true, why:"HTML, CSS and JavaScript in site/public, exactly as the browser gets them.", now:"What is in the repo is what is served. Images and video are in the site's storage."},
-        {t:"Host", agent:true, why:"The site's host serves the files, from wherever the site chooses.", now:"Copies the files when a change is merged, and gives every branch a preview link. Nothing is built."},
+        {t:"The files", agent:true, why:"One plain HTML file per page, with CSS and JavaScript, as the browser gets them once the shared head, menu and footer are added.", now:"What is in the repo is what you see on the site. Images and video are in the site's storage."},
+        {t:"Host", agent:true, why:"The site's host serves the files, from wherever the site chooses.", now:"Copies the files when a change is merged, and gives every branch a preview link. Its only build is Hugo."},
         {t:"Browser", end:true}
       ],
       tools:"Git, Node.js, ffmpeg: installed once by your agent"
@@ -365,10 +365,10 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
     {t:"Ask", who:"You", say:"Here's the new showroom photo. Put it at the top of the Brands page.", body:"You attach the photo in the chat, in your own words. No editor, no login, no dashboard."},
     {t:"Optimize the photo", who:"Your agent", body:"The media script turns whatever you give it into a small, modern file at the size the site allows, and refuses a name that is already taken.", term:`<span class="c">$</span> node scripts/media.mjs showroom.jpg pages/brands showroom-01\n<span class="c"># 4032 × 3024, 3.8 MB  →  1600 × 1200, 96 KB</span>\n&lt;img src="media/pages/brands/showroom-01.avif" width="1600" height="1200" …&gt;`},
     {t:"Edit the page", who:"Your agent", body:"It finds the place by searching for the text, adds the image with a description and its real size, and touches nothing else.", term:`<span class="c">&lt;!-- brands.html --&gt;</span>\n&lt;img src="media/pages/brands/showroom-01.avif"\n     alt="The new showroom" width="1600" height="1200"&gt;`},
-    {t:"Check", who:"Your agent", body:"The check runs in a second over every page: links, images, headers, media. If something is wrong, the agent fixes it before you see anything.", term:`<span class="c">$</span> node scripts/check.mjs\n<span class="g">12 pages checked: 0 errors, 0 warnings.</span>`},
+    {t:"Check", who:"Your agent", body:"The check builds the pages and runs in a second over every one: links, images, search tags, media. If something is wrong, the agent fixes it before you see anything.", term:`<span class="c">$</span> node scripts/check.mjs\n<span class="g">12 pages checked: 0 errors, 0 warnings.</span>`},
     {t:"Show you", who:"Your agent", body:"The agent opens the page in the local preview. You look, and ask for changes if you want them.", say:"Looks good, I'm done."},
     {t:"Send for review", who:"Your agent", body:"Only now, because you said you're done: one command has GitHub copy the new photo to the storage, then commits, opens a pull request, and waits for the host's preview link.", term:`<span class="c">$</span> node scripts/send.mjs "Add the showroom photo to Brands"\n<span class="g">SENT</span> https://github.com/…/pull/42\n<span class="g">PREVIEW</span> https://edit-showroom-photo.preview.example`},
-    {t:"Publish", who:"You, or the site's team", body:"If your GitHub account can push, you say publish and the agent merges. If not, the site's team opens the preview link and publishes. The host copies the files, and the change is live. Nothing was built.", say:"Publish."}
+    {t:"Publish", who:"You, or the site's team", body:"If your GitHub account can push, you say publish and the agent merges. If not, the site's team opens the preview link and publishes. The host runs Hugo, copies the files, and the change is live.", say:"Publish."}
   ];
   const steplist = document.getElementById("steplist"), stepbody = document.getElementById("stepbody");
   let step = 0;
@@ -388,10 +388,10 @@ footer{color:var(--muted);font-size:.88rem;border-top:1px solid var(--line);padd
 
   const ASKS = [
     {q:"Can we use WordPress so marketing can edit?", pill:'<span class="pill no">no, and here is why</span>', a:"Marketing can already edit: they ask their agent, see the change in a preview, and say when they're done. WordPress would add a server, a database, a theme and plugins to keep updated and secure, to give them an editor they no longer need."},
-    {q:"Let's use Astro so we don't repeat the header.", pill:'<span class="pill no">no build step</span>', a:"The header is repeated on purpose. I change every copy in one go, and the check fails if any copy differs. Astro would add packages and a build to save typing that I do for you."},
-    {q:"Add Tailwind.", pill:'<span class="pill no">no build step</span>', a:"Tailwind needs a build. site.css already has the colours, fonts and spacing as tokens. Tell me what you want to look different and I'll change the stylesheet."},
+    {q:"Let's use Astro for components.", pill:'<span class="pill no">one builder</span>', a:"The header, menu and footer are already written once: Hugo adds them to every page, with nothing to install in the project. Astro would add packages to install for what the site already has."},
+    {q:"Add Tailwind.", pill:'<span class="pill no">one builder</span>', a:"Tailwind needs a build of its own. site.css already has the colours, fonts and spacing as tokens. Tell me what you want to look different and I'll change the stylesheet."},
     {q:"Install a gallery plugin.", pill:'<span class="pill no">no code from other sites</span>', a:"A gallery is a grid of images and a few lines of script. I'll write it into site.css and site.js, so there's nothing to update and nothing that breaks when someone else changes their code."},
-    {q:"Set up GitHub Actions to deploy.", pill:'<span class="pill no">no build or deploy pipelines</span>', a:"There is nothing to build, so a pipeline would only add waiting. The host is connected to the repo: every branch gets a preview link, and a merge publishes."},
+    {q:"Set up GitHub Actions to deploy.", pill:'<span class="pill no">no build or deploy pipelines</span>', a:"The host already runs the one build the site needs, Hugo, so a pipeline of our own would only add waiting. The host is connected to the repo: every branch gets a preview link, and a merge publishes."},
     {q:"Put the new video on the home page.", pill:'<span class="pill done">yes</span>', a:"I'll turn it into a small MP4, add it under a new name, and put it on the home page. If it's still over 25 MB, we link it from YouTube instead."},
     {q:"Here's the storage key, save it in the repo.", pill:'<span class="pill no">keys live in GitHub secrets</span>', a:"I won't put it in a file or this chat. Add it on the repo's GitHub secrets page under the name I give you; only the upload step on GitHub reads it."}
   ];

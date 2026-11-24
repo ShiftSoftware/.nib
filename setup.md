@@ -29,12 +29,12 @@ somewhere else. Each site keeps its own copy of `.nib` in a `.nib` folder inside
    fork (a private repo whose organization doesn't allow it), tell them to ask the site's admin, and stop.
 4. **.nib and the site's tools.** The site lists its commands in its `AGENTS.md`, under Commands. From the site's
    folder, run its sync (`node scripts/sync.mjs` in most sites): it clones `.nib` into the `.nib` folder.
-5. **Everything else.** Run the site's doctor if it has one (`node scripts/doctor.mjs`). It lists each missing or
-   unusable tool (Git name and email, ffmpeg with the encoders it needs, Ghostscript) with the command that fixes
+5. **Everything else.** Run the site's doctor (`node scripts/doctor.mjs`). It lists each missing or
+   unusable tool (Git name and email, Hugo, ffmpeg with the encoders it needs, Ghostscript) with the command that fixes
    it. Run those commands, then run the doctor again. Repeat until it prints `OK`.
 6. **Claude Code, opened anywhere.** A site's own hooks load only when Claude Code is opened in the site's folder.
    So that a session opened elsewhere (a parent folder, a subfolder) still gets them, if the site has a user-level
-   hook (`scripts/claude-user.mjs`): copy it to `~/.claude/nib-hook.mjs`, add the site's full folder path as a
+   hook (`scripts/claude-user.mjs`): copy it to `~/.claude/nib-hook.mjs` (again whenever the site's copy changes), add the site's full folder path as a
    line in `~/.claude/nib-sites.txt` (the hook runs a site's scripts only for the folders listed there), and add
    these hooks to the `hooks` in `~/.claude/settings.json`, keeping what is there. Each event runs the same
    command:

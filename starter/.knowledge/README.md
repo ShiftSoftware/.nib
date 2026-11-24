@@ -15,5 +15,5 @@ change as the work.
 
 ## Differences from .nib
 
-None yet. Write each one here with its date and reason (for example: "2026-12-01: pages in two languages, so
-the header check compares per language, because ...").
+None yet. Write each one here with its date and reason (for example: "2026-12-01: optimized media is kept in the repo, in `site/static/media/`, because the site
+has no storage yet").
