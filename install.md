@@ -12,7 +12,7 @@ Every command runs from the repo's folder.
 ## 0. This computer
 
 Follow [setup.md](setup.md) steps 1 and 2, then `git clone https://github.com/ShiftSoftware/.nib .nib` in this
-folder. The tools the site's scripts use (Git, GitHub CLI, Node.js, ffmpeg, Ghostscript) must work before step 3.
+folder. The tools the site's scripts use (Git, GitHub CLI, Node.js, Hugo, ffmpeg, Ghostscript) must work before step 3.
 
 ## 1. The repo
 
@@ -20,17 +20,21 @@ The repo is the folder you are in (its GitHub address: `git remote get-url origi
 
 - **Empty repo:** copy everything in `.nib/starter/` into it, hidden files included. Ask for the site's name,
   what it is for, and how it should look (a website or picture they like helps). Then build the first version
-  yourself, following the page rules in `.nib/AGENTS.md`: `site/public/index.html`, `404.html`, `site.css` (with
-  its `:root` tokens), `site.js`, and a template in `site/templates/` for each kind of page the site needs
-  (a plain page, a product, an article). List the pages and templates in `AGENTS.md`.
+  yourself, following the page rules in `.nib/AGENTS.md` and the layout below: `site/hugo.toml`, the frame and
+  the three shared parts in `site/layouts/`, `site/content/_index.html` and `404.html`, `site/static/site.css`
+  (with its `:root` tokens) and `site.js`, and a template in `site/templates/` for each kind of page the site
+  needs (a plain page, a product, an article). List the pages and templates in `AGENTS.md`.
 - **Repo with a site:** `git switch -c nib/setup`. Copy from `.nib/starter/` only what is missing, and move the
   site into this layout:
 
   | Path | What goes there |
   |---|---|
-  | `site/public/` | The pages, `site.css`, `site.js`, fonts, `404.html`. Pages flat, no subfolders |
-  | `site/templates/` | One template per kind of page, made from the existing pages (a plain page, a product, an article) |
-  | `site/private/` | HTML that is kept but never published |
+  | `site/content/` | One file per page: `title` and `description` between `---` lines, then only what the page has inside `<main>`. The home page is `_index.html`; `404.html` is a page too. Pages flat, no subfolders. A page that is kept but not published has `draft: true` |
+  | `site/layouts/` | `all.html`, the frame of every page (`<html>`, `<head>`, `<body>`, `<main>`), and in `_partials/` one plain HTML file each for what the pages share: `head.html` (builds the search and share tags from the page's title and description), `header.html` with the navigation, `footer.html`. `sitemap.xml` builds the sitemap from the pages. Nothing else unless the site needs it (rule 1) |
+  | `site/static/` | Copied as it is: `site.css`, `site.js`, fonts, `robots.txt`, the host's own files |
+  | `site/hugo.toml` | `baseURL` (the site's address), `title`, the language, `uglyURLs = true` so `about.html` is built as `about.html`, the kinds of page Hugo makes by itself turned off (`taxonomy`, `term`, `rss`, `section`, `404`), `disableHugoGeneratorInject = true`, and the lowest Hugo version the site needs |
+  | `site/public/` | Built by Hugo from the four above, and committed. Never written by hand |
+  | `site/templates/` | One starter per kind of page, made from the existing pages (a plain page, a product, an article) |
   | `media/` | Not in Git. Media already at a public address keeps its links. Media that is only in the repo stays where it is for this first change and goes through the media command in a second change, after step 5 (the upload needs the storage) |
   | `scripts/` | The site's tools (step 2) |
   | `temp/` | Not in Git |
@@ -38,7 +42,12 @@ The repo is the folder you are in (its GitHub address: `git remote get-url origi
 
   Remove build tools, package files and GitHub Actions other than the media one.
 
-`.gitignore` lists `.nib/`, `temp/` and `media/`.
+  Moving a site whose pages were written whole, by hand: take the head, the header and the footer out of one page
+  into the three shared files, and leave in each page's file only its title, its description and what was inside
+  `<main>`. Then build, and compare every built page with the page it replaces: they must be the same, apart
+  from what you chose to drop. Do it as its own change, with no content changes in it.
+
+`.gitignore` lists `.nib/`, `temp/`, `media/` in a site with a storage, and `site/.hugo_build.lock`.
 
 ## 2. The site's tools
 
@@ -48,14 +57,14 @@ change them here, and list them in `AGENTS.md` under Commands. Each must do this
 
 | Tool | What it must do |
 |---|---|
-| sync | Every prompt, returning at once: clone `.nib` into `.nib/` if it is missing, undo any change to it, then in the background reset it to GitHub's `main`, and fetch `origin` (never a fork) and bring its default branch into the current branch: fast-forward when possible, otherwise a merge; skip it while a merge is in progress, leave it when Git refuses because of unsaved edits, and `git merge --abort` a merge that conflicts. With `--rules`, print `.nib/AGENTS.md`, the site's `AGENTS.md` and `.knowledge/README.md`. Print `OK syncing .nib and the site` |
-| guard | Claude Code hook: refuse an edit inside `.nib/` before it happens, and undo any change to `.nib/` after each tool (exit code 2 with a one-line reason) |
-| map | Given words: every file, line and section where they appear. Without words: every page, in every folder, with its title and sections ([organize.md](organize.md)) |
-| media | Optimize a file into `media/<folder>/<name>`: photos to AVIF (WebP with transparency), video to MP4 at most 1920 wide, PDFs compressed, SVG and ICO kept. Keep the original in `temp/`. Refuse a name already used, on the computer or at the storage's address. Refuse anything over 25 MB. Print the tag with the real size |
-| check | The page rules in `.nib/AGENTS.md` (names, one `h1`, `lang`, charset, viewport, title, no inline styles, a `section` id per block, unique ids, `img` with `alt`, `width` and `height`, links that resolve (relative ones, or from `/` in a site with folders), pages in folders, the search and share tags of every public page (title, description, canonical, `og:` tags) and `sitemap.xml` listing every public page, identical HEADER and FOOTER per language, templates, `index.html`, `404.html`), media names, types and sizes, `.nib/`, `temp/` and `media/` ignored by Git, no media in Git when the site has a storage, the hooks and the `.nib` lines in `AGENTS.md` present, `.nib` unchanged |
-| preview | Serve `site/public/` on this computer (port 8300 or the next free one), `media/` at `/media/`, `site/private/` at `/_private/` and `site/templates/` at `/_templates/`. Say so when it is already running |
-| send | Check. Then, when the site has a storage, send new media to it before anything is committed: hand the files to GitHub without committing them (for example as one file on a draft release, picked up by the media Action, which the send starts and waits for), switch the pages' `media/...` links to the storage's address, delete the local copies. Then start a branch if needed (never `main`), commit, bring in the latest `main`, push, open or update the pull request, and wait for the preview link. When the person can't push (`gh api repos/<org>/<repo> --jq .permissions.push` isn't `true`): push the branch to their fork instead (the `fork` remote, made with `gh repo fork --remote --remote-name fork` when missing, so `origin` stays the site), open the pull request against the site, don't wait for a preview, and with new media print `MEDIA FAILED no push access` before committing anything. Print what `.nib/AGENTS.md` expects: `SENT <pull request> PREVIEW <link>` (or `SENT <pull request>` with no preview), `CHECK FAILED`, `CONFLICT <files>`, `MEDIA FAILED`, `OFFLINE` |
-| doctor | Optional: list every missing or unusable tool with the command that fixes it, or print `OK` |
+| sync | Every prompt, returning at once: print `SETUP ...` when the doctor has not passed on this computer since the doctor itself last changed (below); clone `.nib` into `.nib/` if it is missing, undo any change to it, then in the background reset it to GitHub's `main`, and fetch `origin` (never a fork) and bring its default branch into the current branch: fast-forward when possible, otherwise a merge; skip it while a merge is in progress, leave it when Git refuses because of unsaved edits, and `git merge --abort` a merge that conflicts. With `--rules`, print `.nib/AGENTS.md`, the site's `AGENTS.md` and `.knowledge/README.md`. Print `OK syncing .nib and the site` |
+| guard | Claude Code hook: refuse an edit inside `site/public/` or `.nib/` before it happens, and undo any change to `.nib/` after each tool (exit code 2 with a one-line reason) |
+| map | Reads the sources (`site/content/`, `site/layouts/`, `site/static/`, `site/templates/`), never `site/public/`. Given words: every file, line and section where they appear, saying when a line is in a part every page shares. Without words: every page, in every folder, with its title and sections ([organize.md](organize.md)) |
+| media | Optimize a file into `media/<folder>/<name>` (`site/static/media/<folder>/<name>` in a site without a storage): photos to AVIF (WebP with transparency), video to MP4 at most 1920 wide, PDFs compressed, SVG and ICO kept. Keep the original in `temp/`. Refuse a name already used, on the computer or at the storage's address. Refuse anything over 25 MB. Print the tag with the real size |
+| check | Build the pages first, and stop with Hugo's own message when it fails or is not installed. Refuse a change made directly in `site/public/` (an unsaved change there that the last build didn't write, or a branch that changed built pages and no source) and leave that file as it is; otherwise write the build to `site/public/`. Then, on the built pages: the page rules in `.nib/AGENTS.md` (names, one `h1`, `lang`, charset, viewport, title, no inline styles, a `section` id per block, unique ids, `img` with `alt`, `width` and `height`, links that resolve (relative ones, or from `/` in a site with folders), pages in folders, the search and share tags of every public page (title, description, canonical, `og:` tags) and `sitemap.xml` listing every public page and no page with `noindex`, templates, the home page, `404.html`), no script or stylesheet from another website that the site's `AGENTS.md` doesn't allow, media names, types and sizes, `.nib/`, `temp/` and `media/` ignored by Git, no media in Git when the site has a storage, the hooks and the `.nib` lines in `AGENTS.md` present, `.nib` unchanged |
+| preview | Build the pages, drafts included, into a folder of its own under `temp/`, keep building on every change, and serve that folder on this computer (port 8300 or the next free one) the way the host does: `about` and `about.html` both open the page, a missing page gets `404.html`. `site/public/` is not touched. Say so when it is already running |
+| send | Check (which builds). Then, when the site has a storage, send new media to it before anything is committed: hand the files to GitHub without committing them (for example as one file on a draft release, picked up by the media Action, which the send starts and waits for), switch the pages' `media/...` links to the storage's address, delete the local copies. Then start a branch if needed (never `main`), commit, and bring in the latest `main`. A conflict in a source stops with `CONFLICT <files>`; a conflict only inside `site/public/` is settled by building again. After bringing anything in, check again and commit the pages it built. Then push, open or update the pull request, and wait for the preview link. Run again after the agent resolved a conflict, it builds, commits and so finishes the merge. When the person can't push (`gh api repos/<org>/<repo> --jq .permissions.push` isn't `true`): push the branch to their fork instead (the `fork` remote, made with `gh repo fork --remote --remote-name fork` when missing, so `origin` stays the site), open the pull request against the site, don't wait for a preview, and with new media print `MEDIA FAILED no push access` before committing anything. Print what `.nib/AGENTS.md` expects: `SENT <pull request> PREVIEW <link>` (or `SENT <pull request>` with no preview), `CHECK FAILED`, `CONFLICT <files>`, `MEDIA FAILED`, `OFFLINE` |
+| doctor | List every missing or unusable tool with the command that fixes it (Git name and email, GitHub sign-in, Hugo at the version the site needs, ffmpeg with its encoders, Ghostscript), or print `OK` and record, in this clone's `.git` folder, that it passed for this version of the doctor. That record is what the sync compares, so a doctor that gains a requirement is run again on every computer (rule 13) |
 
 Also part of the site:
 

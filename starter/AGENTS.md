@@ -17,11 +17,11 @@ ONE LINE: what this site is, who it is for, its languages.
 |---|---|
 | Languages | English (`lang="en"`) |
 | Hosting | HOST: what serves the site and how branches get preview links |
-| Media storage | STORAGE: what it is and its public address; or "none yet: optimized media in `site/public/media/`" |
-| Address | https://ADDRESS, the canonical address every page's search and share tags use |
+| Media storage | STORAGE: what it is and its public address; or "none yet: optimized media in `site/static/media/`" |
+| Address | https://ADDRESS: `baseURL` in `site/hugo.toml`, the canonical address every page's search and share tags are built from |
 | Share image | `media/site/share.jpg` (1200 × 630, JPEG), for pages without their own picture |
-| Folders | No: every page directly in `site/public/`, relative links. (Yes: pages by topic in folders, links from `/`) |
-| Search engines | Open. (Or: kept out until launch, `noindex` on every page) |
+| Folders | No: every page directly in `site/content/`, relative links. (Yes: pages by topic in folders, links from `/`) |
+| Search engines | Open. (Or: kept out until launch, `noindex` on every page, set once in `site/layouts/_partials/head.html`) |
 | Allowed outside files | None |
 
 ## Commands
@@ -30,23 +30,27 @@ This site's own tools, in `scripts/`. They belong to this repo; change them here
 
 | Command | What it does |
 |---|---|
-| `node scripts/sync.mjs` | Every prompt: keeps `.nib` current and read-only, pulls the site |
+| `node scripts/sync.mjs` | Every prompt: keeps `.nib` current and read-only, brings in the site's latest `main`, and prints `SETUP` when this computer is missing something the site needs |
 | `node scripts/map.mjs "<words>"` | Finds the file, line and section for words from a request |
 | `node scripts/media.mjs <file> <folder> <name>` | Optimizes an image, video or PDF into `media/<folder>/` |
-| `node scripts/check.mjs` | Checks the pages and media |
-| `node scripts/preview.mjs` | Starts the local preview |
-| `node scripts/send.mjs "<what changed>"` | Sends media to the storage, then the changes for review; prints the preview link |
+| `node scripts/check.mjs` | Builds the pages into `site/public/`, then checks them and the media |
+| `node scripts/preview.mjs` | Starts the local preview; it rebuilds on every change and shows drafts |
+| `node scripts/send.mjs "<what changed>"` | Builds and checks, sends media to the storage, then the changes for review; prints the preview link |
+| `node scripts/doctor.mjs` | Lists any tool missing on this computer, with the command that installs it |
 
 ## Pages
 
+Built by Hugo into `site/public/`, which is never changed by hand (see `.nib/AGENTS.md`, rule 1).
+
 | Page | What it is |
 |---|---|
-| `site/public/index.html` | Home |
-| `site/public/404.html` | Page not found |
+| `site/content/_index.html` | Home |
+| `site/content/404.html` | Page not found |
+| `site/layouts/_partials/head.html`, `header.html`, `footer.html` | On every page: the `<head>`, the header with the navigation, the footer |
 
 ## Templates
 
-One per kind of page, made and kept by the agent (see `.nib/AGENTS.md`, Page rules).
+Starters, one per kind of page, made and kept by the agent (see `.nib/AGENTS.md`, Page rules). A new page is a copy in `site/content/`.
 
 | Template | For |
 |---|---|

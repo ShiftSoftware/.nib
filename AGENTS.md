@@ -1,6 +1,6 @@
 # .nib: nothing in between
 
-The general rules for websites built as plain files and edited by asking an agent. Every site that uses `.nib`
+The general rules for websites built as plain HTML files, put together by Hugo, and edited by asking an agent. Every site that uses `.nib`
 follows this file. The site's own `AGENTS.md` adds what is specific to it, and its `.knowledge/` folder holds its
 status and decisions. When the site's files and this file disagree, the site wins only where its `.knowledge/`
 records the difference.
@@ -8,7 +8,7 @@ records the difference.
 These instructions are for any agent (Claude, Codex, Kimi, Cursor, Gemini or another). `.nib` holds rules and the
 way of working, no tools. Each site brings its own tools in its `scripts/` folder and lists them in its
 `AGENTS.md` under Commands. This file names them by what they do: **sync**, **map**, **media**, **check**,
-**preview** and **send**, usually `node scripts/<name>.mjs`. They belong to the site; a site's tool is changed in
+**preview**, **send** and **doctor**, usually `node scripts/<name>.mjs`. They belong to the site; a site's tool is changed in
 that site. [install.md](install.md) says what each must do.
 
 ## Where things are
@@ -22,12 +22,15 @@ that site. [install.md](install.md) says what each must do.
   | Path | What it is |
   |---|---|
   | `.nib/` | This site's copy of `.nib`. Not in the site's Git; the sync keeps it up to date |
-  | `.claude/settings.json` | The site's Claude Code hooks: load the rules at the start of a session, run the sync on every prompt, refuse and undo changes to `.nib`. Change them only when asked |
+  | `.claude/settings.json` | The site's Claude Code hooks: load the rules at the start of a session, run the sync on every prompt, refuse changes to the built pages, refuse and undo changes to `.nib`. Change them only when asked |
   | `AGENTS.md` | This site's own rules: commands, languages, page map, components, sizes, allowed outside files |
   | `.knowledge/` | Status, decisions, open questions, and anything this site does differently from `.nib` |
-  | `site/public/` | The website, exactly as visitors get it. Only this folder is published. Pages sit flat in it |
-  | `site/templates/` | This site's own templates, one per kind of page (`page.html`, `product.html`, `article.html`). You make and keep them. Never published |
-  | `site/private/` | HTML in the repo that is never published (drafts, internal pages) |
+  | `site/content/` | The pages, one HTML file each: `title` and `description` between `---` lines at the top, then the page's own HTML, which is everything inside `<main>`. The home page is `_index.html`. `draft: true` at the top keeps a page off the site |
+  | `site/layouts/` | What every page shares, written once in plain HTML: `_partials/head.html`, `_partials/header.html` (with the navigation), `_partials/footer.html`, and `all.html`, the frame that puts them around a page's content |
+  | `site/static/` | Copied as it is: `site.css`, `site.js`, fonts, `robots.txt`, the host's own files, and `media/` in a site without a storage |
+  | `site/hugo.toml` | Hugo's settings: the site's address, name and languages |
+  | `site/public/` | The website, exactly as visitors get it: built by Hugo from the four above, and committed. Only this folder is published. Never change it by hand (rule 1) |
+  | `site/templates/` | This site's own starters, one per kind of page (`page.html`, `product.html`, `article.html`). You make and keep them. Never published |
   | `media/` | New images, video and PDFs, already optimized, until they are sent. Not in Git (see Media) |
   | `scripts/` | This site's tools: sync, map, media, check, preview, send, and anything else it needs |
   | `temp/` | Files people hand over, before they are optimized. Not in Git |
@@ -59,17 +62,24 @@ resolves them, when the changes are sent.
 In Claude Code the site's hooks do all of this by themselves, on every session start, prompt and tool use. When
 "OK syncing .nib and the site" is already in your context for this prompt, don't run it again.
 
+**When the sync prints `SETUP ...`,** the site now needs something this computer doesn't have yet: a tool or a
+newer version that arrived with someone else's change, such as Hugo on a computer set up before the site used it.
+Before anything else, run the site's doctor, run the commands it lists yourself, and repeat until it prints `OK`.
+Then carry on with the request. Don't mention it unless a step needs the person (a password, a restart); then one
+line. Do the same whenever a tool says something is not installed.
+
 Then read this site's `AGENTS.md` and `.knowledge/README.md` if you haven't in this session.
 
 ## Each request
 
-1. Find the place fast: the map, given words from the request, gives the file, line and section; read about 30
-   lines around it. Don't read whole pages. Keep every page easy to find this way: follow
+1. Find the place fast: the map, given words from the request, gives the source file, line and section; read
+   about 30 lines around it. Don't read whole pages. Keep every page easy to find this way: follow
    [organize.md](organize.md) whenever you add or restructure pages, sections or repeated items.
-2. Make the change, following the page rules below and the site's `AGENTS.md`. Then bring the page's search and
-   share tags up to date (see Search engines and sharing): the person never asks for them, every page needs them.
+2. Make the change in the source (`site/content/`, `site/layouts/`, `site/static/`), never in `site/public/`,
+   following the page rules below and the site's `AGENTS.md`. Then bring the page's `title` and `description` up to
+   date (see Search engines and sharing): the person never asks for them, every page needs them.
 3. Images, video or PDFs: the media command (see Media).
-4. The check. Fix every error.
+4. The check: it builds the pages into `site/public/` and checks them. Fix every error.
 5. Make sure the preview runs, in the background. It prints the address, or says
    the preview is already running. Show the person the page in your browser if you have one.
 6. Reply: what changed, the preview address, and "Anything else, or are you done?"
@@ -80,7 +90,7 @@ Don't commit or send anything until the person says they are done.
 
 When the person can publish (see Publishing), ask once, in one line: "Publish now, or see a preview link first?"
 Most people want to publish now; skip the question when they already said "publish". Then run the site's send
-with one line in English saying what changed. It checks, sends new media to the storage
+with one line in English saying what changed. It builds and checks the pages, sends new media to the storage
 (see Media), starts a branch if needed, commits, brings in the latest `main`, pushes (to the person's fork when
 they can't push to the site), opens or updates the pull request, and prints the preview link the site's host
 posts on it. Act on what it prints:
@@ -90,7 +100,7 @@ posts on it. Act on what it prints:
 | `SENT ... PREVIEW <link>` | They chose publish now: publish at once (below), without waiting for the preview. They chose a preview: "Preview: <link>. Say publish when it looks right." They can't publish: "Sent for review. Preview: <link>" |
 | `SENT ...` with no preview | The same reply without the link. A host may not preview changes sent from a fork |
 | `CHECK FAILED ...` | Fix what the check lists, run it again |
-| `CONFLICT <files>` | Resolve them quietly (below), `git add` them, `git commit --no-edit`, run it again |
+| `CONFLICT <files>` | Resolve them quietly (below), `git add` them, run it again: it builds the pages again and finishes the merge |
 | `MEDIA FAILED no push access` | Tell the person in one line that pictures and files can only be added by someone with access to the site |
 | `MEDIA FAILED ...` | Nothing was sent and the files are still in `media/`. A name already used: add the file again under a new name, change the page, run it again. Anything else: tell the person in one line their images couldn't be uploaded yet and an admin must look at the site's media storage |
 | `OFFLINE ...` | Tell the person in one line their changes are saved and will be sent when they are online |
@@ -115,8 +125,8 @@ public repos:
   merged branch on GitHub and on the computer; then `git switch main` and `git pull --ff-only`, so the next change
   starts on a new branch. A merged branch is never reused. Reply in one line: "Published. Live in a few minutes:
   <site address>".
-- **Straight to `main`,** only when someone who can push asks for it and there is no new media: run the check,
-  commit on `main`, `git pull --ff-only`, `git push`. Never force.
+- **Straight to `main`,** only when someone who can push asks for it and there is no new media: run the check
+  (it builds the pages), commit on `main`, `git pull --ff-only`, `git push`. Never force.
 - **GitHub refuses** a merge or a push: reply "Sent for review; the site's team will publish it." Don't try another
   way.
 
@@ -131,7 +141,8 @@ Two people changed the same lines. Never discard anyone's work.
 2. Keep both changes when they don't contradict (two new sections, two edited sentences in different places).
 3. When they do contradict, keep what is already on `main` (another person's published work) and apply this
    person's request again on top of it.
-4. Remove every marker, run the check, and commit.
+4. Remove every marker and `git add` the file. Leave a conflict inside `site/public/` alone: those pages are
+   built again from the sources you resolved.
 5. Tell the person nothing unless their change could not be kept as asked; then one line, such as "Someone else
    changed this section too; I kept both."
 
@@ -143,23 +154,27 @@ When a request seems to need something these rules forbid, say in one line which
 plain-files way. If the person still wants it, write it in the site's `.knowledge/` as a proposal and don't add
 anything until it is decided there.
 
-1. **No build step.** Nothing that compiles, bundles, transpiles, minifies or generates the served files: no
-   framework, no CSS framework that needs a build, no templating or includes. Repetition across pages is fine:
-   you keep it consistent and the check confirms it.
+1. **One builder, on the person's computer.** Hugo puts the pages together, and nothing else generates the served
+   files: no framework, no bundler, no minifier, no CSS framework that needs a build, no JavaScript build. What
+   every page shares (the head, the header with its navigation, the footer) is written once, as a Hugo partial in
+   plain HTML. A page's own content stays plain HTML in its own file. Keep Hugo's part that small: a new partial,
+   shortcode or data file only for something that truly repeats, with the reason in the site's `.knowledge/`. The
+   built pages in `site/public/` are committed and never changed by hand: the check builds them, and refuses a
+   change made there.
 2. **Nothing to install in the project.** No `package.json`, `node_modules`, package manager or Python
-   environment. The computer has Git, GitHub CLI, Node.js, ffmpeg and Ghostscript, installed once by the setup;
-   nothing else.
+   environment. The computer has Git, GitHub CLI, Node.js, Hugo, ffmpeg and Ghostscript, installed by the setup
+   and the site's doctor; nothing else.
 3. **No CMS, page builder, plugin, admin panel or database for content.** The content is in the pages. A person
    who wants to change it asks their agent.
 4. **No libraries or files from other websites** in the pages, except the site's media storage and what the site's
    `AGENTS.md` allows. Write the small piece of code you need.
-5. **No build or deploy pipelines.** The site's host is connected to the repo: a branch gets a preview link,
-   and merging into `main` publishes the files as they are. The site's one GitHub Action only copies new media to
+5. **No build or deploy pipelines.** The built pages are in the repo, so the host builds nothing. It is connected
+   to the repo: a branch gets a preview link, and merging into `main` publishes `site/public/` as it is. The site's one GitHub Action only copies new media to
    the storage. Add no other.
 6. **Media is optimized and never replaced.** Everything a person gives you goes through the site's media
    command. With a media storage, it waits in `media/`, which Git ignores, and goes to the storage when the
    changes are sent, before anything is committed; the pages link the storage's address. A site without a
-   storage yet keeps the optimized files in the repo, in `site/public/media/`, linked as `media/...`, and says so
+   storage yet keeps the optimized files in the repo, in `site/static/media/`, linked as `media/...`, and says so
    in its `AGENTS.md` and `.knowledge/`; they move to the storage when it is ready. A published file is never
    replaced: a new version gets a new name. The site's `AGENTS.md` names its media storage, or says it has none.
 7. **Keys live only in the repo's GitHub secrets.** Never in a file, a page, a chat or on the person's computer. A
@@ -177,31 +192,35 @@ anything until it is decided there.
     `AGENTS.md`, `.nib/` in `.gitignore`. The hooks refuse such edits and undo them, the sync resets `.nib` to
     GitHub on every prompt, and the check refuses to send a site without them. When `.nib` itself needs to change,
     write the proposal in the site's `.knowledge/` (rule 8); its maintainers change it in `.nib`'s own repo.
+13. **A change that needs something new on the computer says so in the doctor.** A new tool, a newer version, a
+    new setting: add it to the site's doctor in the same change. Every other computer then sets itself up on its
+    next prompt (see Every prompt), and nobody has to be told to install anything.
 
 ## Page rules
 
 - **Templates are yours to keep.** Each site has one template in `site/templates/` per kind of page: a plain
   page, a product, an article, a branch. Every new page starts from the template of its kind: copy it into
-  `site/public/` or the page's folder, keep its `<head>`, header and footer, fill in the main part. When a new kind of page is needed,
-  make its template first, from the site's existing pages and components, then the page from it. When a shared
-  block (header, footer, a component) changes, change the templates in the same change. List the templates in
+  `site/content/` or the page's folder, set its `title` and `description`, fill in the content. When a new kind of page is needed,
+  make its template first, from the site's existing pages and components, then the page from it. List the templates in
   the site's `AGENTS.md`. The person never needs to know templates exist.
 - Page names are lower-case English words with hyphens (`after-sales.html`).
-- **Folders by topic.** A small site keeps its pages directly in `site/public/`. When a topic has more than one
-  page (about, news, products, branches) give it a folder named after it, with `index.html` as its main page:
-  `about/index.html`, `about/history.html`, `about/team.html`. Do it when a topic gets its second page, or when the
+- **Folders by topic.** A small site keeps its pages directly in `site/content/`. When a topic has more than one
+  page (about, news, products, branches) give it a folder named after it, with `_index.html` as its main page:
+  `about/_index.html`, `about/history.html`, `about/team.html`. Do it when a topic gets its second page, or when the
   site passes about ten pages: move the pages in their own change, with redirects from the old addresses (see
   Search engines and sharing). The site's `AGENTS.md` says whether it uses folders.
 - **Links.** Without folders, links are relative file names (`about.html`, `index.html#contact`), never a path
   starting with `/`, except in `404.html`, which has `<base href="/">`. With folders, every link and file path
   starts with `/` and leaves out `.html` and `index.html` (`/about/history`, `/#contact`, `/site.css`), so the
   header and footer stay identical at every depth. Switch the whole site at once.
-- The blocks between `<!-- HEADER -->` and `<!-- /HEADER -->`, and `<!-- FOOTER -->` and `<!-- /FOOTER -->`, are
-  identical on every page of the same language. Change one, copy it to all; the check compares them.
-- Every page has `<html lang="...">`, `<meta charset="utf-8">`, the viewport meta tag, a `<title>`, and exactly
-  one `<h1>`, then `<h2>`, `<h3>` in order.
-- Styles only in `site/public/site.css`, from its `:root` tokens: no `style="..."`, no `<style>`. Behaviour only
-  in `site/public/site.js`. Reuse what is there before adding.
+- **The head, the header with its navigation, and the footer are one file each,** in `site/layouts/_partials/`.
+  Change them there, once; every page gets the change at the next build. Never copy them into a page.
+- **More than one language:** Hugo's languages, set in `site/hugo.toml`. A page has one file per language
+  (`about.ru.html`, `about.en.html`), which is also how the link to "this page in the other language" is made.
+- Every built page has `<html lang="...">`, `<meta charset="utf-8">`, the viewport meta tag, a `<title>`, and
+  exactly one `<h1>`, then `<h2>`, `<h3>` in order.
+- Styles only in `site/static/site.css`, from its `:root` tokens: no `style="..."`, no `<style>`. Behaviour only
+  in `site/static/site.js`. Reuse what is there before adding.
 - Use logical CSS properties (`margin-inline-start`, `text-align: start`), so right-to-left languages work.
 - Every `<img>` has `alt` (in the page's language, says what it shows; `alt=""` if purely decorative), `width`,
   `height`, and `loading="lazy"` unless it is at the top of the page.
@@ -211,9 +230,10 @@ anything until it is decided there.
 
 ## Search engines and sharing
 
-Every public page carries these in its `<head>`, kept true to what the page says. Add them to a new page, fix
-them on every change that alters a page's subject, title or address, and keep them in every template. The
-site's `AGENTS.md` gives its address (`<site>` below) and its share image.
+Every public page carries these in its `<head>`. `head.html` builds them from the page's `title` and
+`description`, so a page needs only those two, kept true to what the page says: fix them on every change that
+alters a page's subject. The site's address (`<site>` below) is `baseURL` in `site/hugo.toml`; the site's
+`AGENTS.md` gives its share image.
 
 - `<title>`: the page's own name, then the site's name; unique, about 60 characters at most.
 - `<meta name="description">`: one sentence, at most about 155 characters, saying what is on this page.
@@ -228,11 +248,12 @@ site's `AGENTS.md` gives its address (`<site>` below) and its share image.
   `WebSite` on the home page, `Event`, `Article`, `FAQPage`, `Product`, `LocalBusiness`. It is data, not
   behaviour, so it is the one script allowed outside `site.js`. Only what the page itself shows.
 - A multilingual site: `<link rel="alternate" hreflang="...">` to each language's version of the page.
-- `site/public/sitemap.xml` lists every public page by its canonical address; `robots.txt` allows all and names
-  the sitemap. A new, moved or removed page changes the sitemap in the same change. A moved or removed page gets
-  a redirect from its old address in the host's redirect file (`_redirects` on Cloudflare and Netlify).
-- `404.html`, `site/private/` and a site not yet open to search engines carry
-  `<meta name="robots" content="noindex">`; the site's `AGENTS.md` says when a whole site is kept out.
+- `sitemap.xml` is built from the pages and lists every public page by its canonical address; `robots.txt`
+  allows all and names the sitemap. A moved or removed page gets a redirect from its old address in the host's
+  redirect file (`_redirects` on Cloudflare and Netlify).
+- `404.html`, any page with `noindex: true` at its top, and a site not yet open to search engines carry
+  `<meta name="robots" content="noindex">` and stay out of the sitemap; the site's `AGENTS.md` says when a whole
+  site is kept out.
 
 ## Media
 
@@ -246,7 +267,7 @@ asks for one.
 - It refuses a name already used, on the computer or in the storage, and prints the `<img>` or `<video>` tag (with the real size) to put in the
   page; add the `alt`.
 - No file over 25 MB, so pages stay fast. Longer video goes on YouTube.
-- A site without a storage: the media command writes to `site/public/media/` and the files are committed with
+- A site without a storage: the media command writes to `site/static/media/` and the files are committed with
   the pages (rule 6). Everything below applies once it has one.
 - The preview shows `media/` straight from the computer. When the changes are sent, the send hands the new files
   to GitHub without committing them, GitHub copies them to the storage with the repo's secrets (keys never come to
