@@ -48,7 +48,7 @@ change them here, and list them in `AGENTS.md` under Commands. Each must do this
 
 | Tool | What it must do |
 |---|---|
-| sync | Every prompt, returning at once: clone `.nib` into `.nib/` if it is missing, undo any change to it, then in the background reset it to GitHub's `main` and pull the site (`--ff-only`) from `origin`, never from a fork. With `--rules`, print `.nib/AGENTS.md`, the site's `AGENTS.md` and `.knowledge/README.md`. Print `OK syncing .nib and the site` |
+| sync | Every prompt, returning at once: clone `.nib` into `.nib/` if it is missing, undo any change to it, then in the background reset it to GitHub's `main`, and fetch `origin` (never a fork) and bring its default branch into the current branch: fast-forward when possible, otherwise a merge; skip it while a merge is in progress, leave it when Git refuses because of unsaved edits, and `git merge --abort` a merge that conflicts. With `--rules`, print `.nib/AGENTS.md`, the site's `AGENTS.md` and `.knowledge/README.md`. Print `OK syncing .nib and the site` |
 | guard | Claude Code hook: refuse an edit inside `.nib/` before it happens, and undo any change to `.nib/` after each tool (exit code 2 with a one-line reason) |
 | map | Given words: every file, line and section where they appear. Without words: every page, in every folder, with its title and sections ([organize.md](organize.md)) |
 | media | Optimize a file into `media/<folder>/<name>`: photos to AVIF (WebP with transparency), video to MP4 at most 1920 wide, PDFs compressed, SVG and ICO kept. Keep the original in `temp/`. Refuse a name already used, on the computer or at the storage's address. Refuse anything over 25 MB. Print the tag with the real size |
@@ -96,6 +96,8 @@ Do what you can with `gh`; give the person one line for each step only they can 
    `{"name":"main","target":"branch","enforcement":"active","conditions":{"ref_name":{"include":["~DEFAULT_BRANCH"],"exclude":[]}},"rules":[{"type":"deletion"},{"type":"non_fast_forward"}]}`.
    If GitHub refuses because of the plan (private repos on the free plan), carry on: rule 11 keeps agents from
    forcing. Record it in `.knowledge/`. Who publishes is set by GitHub access (step 5).
+   Allow squash merging, the one way changes are published:
+   `gh api repos/<org>/<repo> --method PATCH -F allow_squash_merge=true -F delete_branch_on_merge=true`.
 2. **Hosting.** Ask which host serves the site, or suggest one the organization already uses. It must serve
    `site/public/` exactly as it is (no build command), give every branch a preview link that it posts on the pull
    request, and publish when `main` changes. Set it up with the person, adding only the small settings files that
