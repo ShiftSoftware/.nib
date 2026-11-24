@@ -51,8 +51,10 @@ The person asking may have no technical knowledge at all: designers, marketing, 
 
 Run the site's sync at the start of every prompt the person sends. It returns at once. It clones `.nib` if it is
 missing, undoes any change to it, and then, each in its own background task, resets `.nib` to GitHub's `main` and
-pulls the site. Don't wait for it, and don't mention it. Anything it can't bring in safely is brought in when the
-changes are sent.
+brings the site's latest `main` from GitHub into the branch being worked on (or into `main` itself), so the person
+always works on what is live, including what others published since they started. Don't wait for it, and don't
+mention it. It never touches unsaved edits and undoes a merge that would conflict; the send brings those in, and
+resolves them, when the changes are sent.
 
 In Claude Code the site's hooks do all of this by themselves, on every session start, prompt and tool use. When
 "OK syncing .nib and the site" is already in your context for this prompt, don't run it again.
@@ -108,7 +110,8 @@ public repos:
 | Can't read (a private repo) | Can't be made. Tell them in one line to ask the site's admin to add their GitHub account |
 
 - **"Publish"** from someone who can push: send first if anything is unsent, then
-  `gh pr merge <number> --merge --delete-branch` (`--squash` when the repo allows only that). It deletes the
+  `gh pr merge <number> --squash --delete-branch`: always squash, so each published change is one commit on
+  `main`, whatever merges and fixes its branch collected. It deletes the
   merged branch on GitHub and on the computer; then `git switch main` and `git pull --ff-only`, so the next change
   starts on a new branch. A merged branch is never reused. Reply in one line: "Published. Live in a few minutes:
   <site address>".
