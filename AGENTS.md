@@ -1,6 +1,6 @@
 # .nib: nothing in between
 
-The general rules for websites built as plain HTML files, put together by Hugo, and edited by asking an agent. Every site that uses `.nib`
+The general rules for websites built as plain HTML files, joined to their shared parts by Hugo when the host publishes, and edited by asking an agent. Every site that uses `.nib`
 follows this file. The site's own `AGENTS.md` adds what is specific to it, and its `.knowledge/` folder holds its
 status and decisions. When the site's files and this file disagree, the site wins only where its `.knowledge/`
 records the difference.
@@ -22,14 +22,14 @@ that site. [install.md](install.md) says what each must do.
   | Path | What it is |
   |---|---|
   | `.nib/` | This site's copy of `.nib`. Not in the site's Git; the sync keeps it up to date |
-  | `.claude/settings.json` | The site's Claude Code hooks: load the rules at the start of a session, run the sync on every prompt, refuse changes to the built pages, refuse and undo changes to `.nib`. Change them only when asked |
+  | `.claude/settings.json` | The site's Claude Code hooks: load the rules at the start of a session, run the sync on every prompt, refuse and undo changes to `.nib`. Change them only when asked |
   | `AGENTS.md` | This site's own rules: commands, languages, page map, components, sizes, allowed outside files |
   | `.knowledge/` | Status, decisions, open questions, and anything this site does differently from `.nib` |
   | `site/content/` | The pages, one HTML file each: `title` and `description` between `---` lines at the top, then the page's own HTML, which is everything inside `<main>`. The home page is `_index.html`. `draft: true` at the top keeps a page off the site |
   | `site/layouts/` | What every page shares, written once in plain HTML: `_partials/head.html`, `_partials/header.html` (with the navigation), `_partials/footer.html`, and `all.html`, the frame that puts them around a page's content |
   | `site/static/` | Copied as it is: `site.css`, `site.js`, fonts, `robots.txt`, the host's own files, and `media/` in a site without a storage |
   | `site/hugo.toml` | Hugo's settings: the site's address, name and languages |
-  | `site/public/` | The website, exactly as visitors get it: built by Hugo from the four above, and committed. Only this folder is published. Never change it by hand (rule 1) |
+  | `site/public/` | Not in the repo. The host builds it from the four above when it publishes, and only that is published. Git ignores it |
   | `site/templates/` | This site's own starters, one per kind of page (`page.html`, `product.html`, `article.html`). You make and keep them. Never published |
   | `media/` | New images, video and PDFs, already optimized, until they are sent. Not in Git (see Media) |
   | `scripts/` | This site's tools: sync, map, media, check, preview, send, and anything else it needs |
@@ -75,11 +75,10 @@ Then read this site's `AGENTS.md` and `.knowledge/README.md` if you haven't in t
 1. Find the place fast: the map, given words from the request, gives the source file, line and section; read
    about 30 lines around it. Don't read whole pages. Keep every page easy to find this way: follow
    [organize.md](organize.md) whenever you add or restructure pages, sections or repeated items.
-2. Make the change in the source (`site/content/`, `site/layouts/`, `site/static/`), never in `site/public/`,
-   following the page rules below and the site's `AGENTS.md`. Then bring the page's `title` and `description` up to
+2. Make the change in the source (`site/content/`, `site/layouts/`, `site/static/`), following the page rules below and the site's `AGENTS.md`. Then bring the page's `title` and `description` up to
    date (see Search engines and sharing): the person never asks for them, every page needs them.
 3. Images, video or PDFs: the media command (see Media).
-4. The check: it builds the pages into `site/public/` and checks them. Fix every error.
+4. The check: it builds the pages the way the host will, and checks them. Fix every error.
 5. Make sure the preview runs, in the background. It prints the address, or says
    the preview is already running. Show the person the page in your browser if you have one.
 6. Reply: what changed, the preview address, and "Anything else, or are you done?"
@@ -90,7 +89,7 @@ Don't commit or send anything until the person says they are done.
 
 When the person can publish (see Publishing), ask once, in one line: "Publish now, or see a preview link first?"
 Most people want to publish now; skip the question when they already said "publish". Then run the site's send
-with one line in English saying what changed. It builds and checks the pages, sends new media to the storage
+with one line in English saying what changed. It checks, sends new media to the storage
 (see Media), starts a branch if needed, commits, brings in the latest `main`, pushes (to the person's fork when
 they can't push to the site), opens or updates the pull request, and prints the preview link the site's host
 posts on it. Act on what it prints:
@@ -100,7 +99,7 @@ posts on it. Act on what it prints:
 | `SENT ... PREVIEW <link>` | They chose publish now: publish at once (below), without waiting for the preview. They chose a preview: "Preview: <link>. Say publish when it looks right." They can't publish: "Sent for review. Preview: <link>" |
 | `SENT ...` with no preview | The same reply without the link. A host may not preview changes sent from a fork |
 | `CHECK FAILED ...` | Fix what the check lists, run it again |
-| `CONFLICT <files>` | Resolve them quietly (below), `git add` them, run it again: it builds the pages again and finishes the merge |
+| `CONFLICT <files>` | Resolve them quietly (below), `git add` them, `git commit --no-edit`, run it again |
 | `MEDIA FAILED no push access` | Tell the person in one line that pictures and files can only be added by someone with access to the site |
 | `MEDIA FAILED ...` | Nothing was sent and the files are still in `media/`. A name already used: add the file again under a new name, change the page, run it again. Anything else: tell the person in one line their images couldn't be uploaded yet and an admin must look at the site's media storage |
 | `OFFLINE ...` | Tell the person in one line their changes are saved and will be sent when they are online |
@@ -125,8 +124,8 @@ public repos:
   merged branch on GitHub and on the computer; then `git switch main` and `git pull --ff-only`, so the next change
   starts on a new branch. A merged branch is never reused. Reply in one line: "Published. Live in a few minutes:
   <site address>".
-- **Straight to `main`,** only when someone who can push asks for it and there is no new media: run the check
-  (it builds the pages), commit on `main`, `git pull --ff-only`, `git push`. Never force.
+- **Straight to `main`,** only when someone who can push asks for it and there is no new media: run the check,
+  commit on `main`, `git pull --ff-only`, `git push`. Never force.
 - **GitHub refuses** a merge or a push: reply "Sent for review; the site's team will publish it." Don't try another
   way.
 
@@ -141,8 +140,9 @@ Two people changed the same lines. Never discard anyone's work.
 2. Keep both changes when they don't contradict (two new sections, two edited sentences in different places).
 3. When they do contradict, keep what is already on `main` (another person's published work) and apply this
    person's request again on top of it.
-4. Remove every marker and `git add` the file. Leave a conflict inside `site/public/` alone: those pages are
-   built again from the sources you resolved.
+4. Remove every marker, run the check, and commit. A conflict on a file in `site/public/` comes from work begun
+   before the site moved to Hugo: make the same change in the page's file in `site/content/`, and `git rm` the
+   file in `site/public/`.
 5. Tell the person nothing unless their change could not be kept as asked; then one line, such as "Someone else
    changed this section too; I kept both."
 
@@ -154,13 +154,13 @@ When a request seems to need something these rules forbid, say in one line which
 plain-files way. If the person still wants it, write it in the site's `.knowledge/` as a proposal and don't add
 anything until it is decided there.
 
-1. **One builder, on the person's computer.** Hugo puts the pages together, and nothing else generates the served
-   files: no framework, no bundler, no minifier, no CSS framework that needs a build, no JavaScript build. What
-   every page shares (the head, the header with its navigation, the footer) is written once, as a Hugo partial in
-   plain HTML. A page's own content stays plain HTML in its own file. Keep Hugo's part that small: a new partial,
-   shortcode or data file only for something that truly repeats, with the reason in the site's `.knowledge/`. The
-   built pages in `site/public/` are committed and never changed by hand: the check builds them, and refuses a
-   change made there.
+1. **Hugo, and nothing else.** Hugo only joins each page to what every page shares, and nothing else generates
+   the served files: no framework, no bundler, no minifier, no CSS framework that needs a build, no JavaScript
+   build. What every page shares (the head, the header with its navigation, the footer) is written once, as a Hugo
+   partial in plain HTML. A page's own content stays plain HTML in its own file. Keep Hugo's part that small: a new
+   partial, shortcode or data file only for something that truly repeats, with the reason in the site's
+   `.knowledge/`. The host runs Hugo when it publishes; the person's computer runs it only for the preview and the
+   check. The built pages are never in the repo.
 2. **Nothing to install in the project.** No `package.json`, `node_modules`, package manager or Python
    environment. The computer has Git, GitHub CLI, Node.js, Hugo, ffmpeg and Ghostscript, installed by the setup
    and the site's doctor; nothing else.
@@ -168,8 +168,8 @@ anything until it is decided there.
    who wants to change it asks their agent.
 4. **No libraries or files from other websites** in the pages, except the site's media storage and what the site's
    `AGENTS.md` allows. Write the small piece of code you need.
-5. **No build or deploy pipelines.** The built pages are in the repo, so the host builds nothing. It is connected
-   to the repo: a branch gets a preview link, and merging into `main` publishes `site/public/` as it is. The site's one GitHub Action only copies new media to
+5. **No pipelines of our own.** The site's host is connected to the repo and runs one command, Hugo: a branch
+   gets a preview link, and merging into `main` publishes what Hugo builds. No other build step, no deploy script. The site's one GitHub Action only copies new media to
    the storage. Add no other.
 6. **Media is optimized and never replaced.** Everything a person gives you goes through the site's media
    command. With a media storage, it waits in `media/`, which Git ignores, and goes to the storage when the
@@ -214,7 +214,7 @@ anything until it is decided there.
   starts with `/` and leaves out `.html` and `index.html` (`/about/history`, `/#contact`, `/site.css`), so the
   header and footer stay identical at every depth. Switch the whole site at once.
 - **The head, the header with its navigation, and the footer are one file each,** in `site/layouts/_partials/`.
-  Change them there, once; every page gets the change at the next build. Never copy them into a page.
+  Change them there, once; every page gets the change. Never copy them into a page.
 - **More than one language:** Hugo's languages, set in `site/hugo.toml`. A page has one file per language
   (`about.ru.html`, `about.en.html`), which is also how the link to "this page in the other language" is made.
 - Every built page has `<html lang="...">`, `<meta charset="utf-8">`, the viewport meta tag, a `<title>`, and

@@ -1,9 +1,8 @@
 # .nib: nothing in between
 
 A way to build websites as plain files that anyone edits by asking an AI agent. No CMS, no framework, no
-pipeline: each page is a plain HTML file, Hugo adds what every page shares (the head, the navigation, the footer)
-on the editor's computer, the built files in Git are the website, the agent is the editor, and the host serves the
-files as they are.
+pipeline of our own: each page is a plain HTML file, the agent is the editor, and when the host publishes it runs
+one command, Hugo, which only joins each page to what every page shares (the head, the navigation, the footer).
 
 `.nib` holds the rules and the way of working, for agents to follow: the general rules ([AGENTS.md](AGENTS.md)),
 how to keep content easy to find ([organize.md](organize.md)), how to set up a repo ([install.md](install.md)) and

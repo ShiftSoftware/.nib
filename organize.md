@@ -7,7 +7,7 @@ every page so that it can, and keep it that way on every change.
 ## Find before you read
 
 1. The site's map with some words (`node scripts/map.mjs "<words>"` in most sites): every place those words appear in the sources, with the file, the line and the
-   section it sits in. It never points into `site/public/`: those pages are built, and a change there is lost. Search for the visible text, in the page's language. For a request in another language,
+   section it sits in. Search for the visible text, in the page's language. For a request in another language,
    look the words up in the site's **Words people use** table first.
 2. The map with no words: the whole site at a glance: every page, its title, and its sections with their
    lines and headings.

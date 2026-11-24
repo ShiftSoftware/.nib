@@ -16,7 +16,7 @@ ONE LINE: what this site is, who it is for, its languages.
 | | |
 |---|---|
 | Languages | English (`lang="en"`) |
-| Hosting | HOST: what serves the site and how branches get preview links |
+| Hosting | HOST: what serves the site, where its Hugo build command is set, and how branches get preview links |
 | Media storage | STORAGE: what it is and its public address; or "none yet: optimized media in `site/static/media/`" |
 | Address | https://ADDRESS: `baseURL` in `site/hugo.toml`, the canonical address every page's search and share tags are built from |
 | Share image | `media/site/share.jpg` (1200 × 630, JPEG), for pages without their own picture |
@@ -33,14 +33,14 @@ This site's own tools, in `scripts/`. They belong to this repo; change them here
 | `node scripts/sync.mjs` | Every prompt: keeps `.nib` current and read-only, brings in the site's latest `main`, and prints `SETUP` when this computer is missing something the site needs |
 | `node scripts/map.mjs "<words>"` | Finds the file, line and section for words from a request |
 | `node scripts/media.mjs <file> <folder> <name>` | Optimizes an image, video or PDF into `media/<folder>/` |
-| `node scripts/check.mjs` | Builds the pages into `site/public/`, then checks them and the media |
+| `node scripts/check.mjs` | Builds the pages the way the host will, then checks them and the media |
 | `node scripts/preview.mjs` | Starts the local preview; it rebuilds on every change and shows drafts |
-| `node scripts/send.mjs "<what changed>"` | Builds and checks, sends media to the storage, then the changes for review; prints the preview link |
+| `node scripts/send.mjs "<what changed>"` | Checks, sends media to the storage, then the changes for review; prints the preview link |
 | `node scripts/doctor.mjs` | Lists any tool missing on this computer, with the command that installs it |
 
 ## Pages
 
-Built by Hugo into `site/public/`, which is never changed by hand (see `.nib/AGENTS.md`, rule 1).
+The host builds the pages with Hugo when it publishes; the built pages are not in the repo (see `.nib/AGENTS.md`, rule 1).
 
 | Page | What it is |
 |---|---|
