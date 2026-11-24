@@ -161,8 +161,9 @@ anything until it is decided there.
    partial, shortcode or data file only for something that truly repeats, with the reason in the site's
    `.knowledge/`. The host runs Hugo when it publishes; the person's computer runs it only for the preview and the
    check. The built pages are never in the repo.
-2. **Nothing to install in the project.** No `package.json`, `node_modules`, package manager or Python
-   environment. The computer has Git, GitHub CLI, Node.js, Hugo, ffmpeg and Ghostscript, installed by the setup
+2. **Nothing to install in the project.** Nobody runs a package manager, and the pages and the site's tools use no
+   packages and no Python environment. A `package.json` with its lock file may list the host's own deploy tool and
+   nothing else, so the host can cache it; only the host installs it. The computer has Git, GitHub CLI, Node.js, Hugo, ffmpeg and Ghostscript, installed by the setup
    and the site's doctor; nothing else.
 3. **No CMS, page builder, plugin, admin panel or database for content.** The content is in the pages. A person
    who wants to change it asks their agent.

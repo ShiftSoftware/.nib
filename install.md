@@ -40,14 +40,15 @@ The repo is the folder you are in (its GitHub address: `git remote get-url origi
   | `temp/` | Not in Git |
   | `.nib/` | This site's copy of `.nib`. Not in Git |
 
-  Remove build tools, package files and GitHub Actions other than the media one.
+  Remove build tools, package files (other than a `package.json` for the host's deploy tool, rule 2) and GitHub
+  Actions other than the media one.
 
   Moving a site whose pages were written whole, by hand: take the head, the header and the footer out of one page
   into the three shared files, and leave in each page's file only its title, its description and what was inside
   `<main>`. Then build, and compare every built page with the page it replaces: they must be the same, apart
   from what you chose to drop. Do it as its own change, with no content changes in it.
 
-`.gitignore` lists `.nib/`, `temp/`, `site/public/`, `site/.hugo_build.lock`, and `media/` in a site with a storage.
+`.gitignore` lists `.nib/`, `temp/`, `node_modules/`, `site/public/`, `site/.hugo_build.lock`, and `media/` in a site with a storage.
 
 ## 2. The site's tools
 
