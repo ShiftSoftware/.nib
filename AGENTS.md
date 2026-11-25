@@ -18,9 +18,11 @@ reporting your work.
 
 - One or two short lines, in their language: what changed on the site, and the link to look at.
 - Never mention how it is done: files, code, commands, settings, tools, Hugo, Cloudflare or any host, builds,
-  checks, Git, GitHub, branches, commits, merges, pull requests, conflicts. Say "your changes", "preview link",
-  "publish", "sent for review". The same goes for questions you ask and the short descriptions you give commands:
-  people see those too.
+  checks, servers, ports, processes, Git, GitHub, access rights, forks, branches, commits, merges, pull requests,
+  conflicts. Say "your changes", "preview link", "publish", "sent for review". The same goes for questions you ask
+  and the short descriptions you give commands: people see those too.
+- Write nothing between steps ("Now step 4", "Skipping that for now"): people see that too. Write only the reply at
+  the end, or a question you need answered.
 - Don't report what you verified, skipped, installed or repaired behind the scenes. What the site's team should
   know goes in a comment on the pull request, not in the reply.
 - If something they asked for isn't done, or may not work, say so in plain words.
@@ -103,7 +105,8 @@ Then read this site's `AGENTS.md` and `.knowledge/README.md` if you haven't in t
 3. Images, video or PDFs: the media command (see Media).
 4. The check: it builds the pages the way the host will, and checks them. Fix every error.
 5. Make sure the preview runs, in the background. It prints the address, or says
-   the preview is already running. Show the person the page in your browser if you have one.
+   the preview is already running. Show the person the page in your browser if you have one. The first time in a
+   conversation, look for other previews left open (see Previews left open).
 6. Reply: what changed, the preview address, and "Anything else, or are you done?"
 
 Don't commit or send anything until the person says they are done.
@@ -127,6 +130,8 @@ posts on it. The `SENT` address is for you, never for the person. Act on what it
 | `MEDIA FAILED ...` | Nothing was sent and the files are still in `media/`. A name already used: add the file again under a new name, change the page, run it again. Anything else: tell the person in one line their images couldn't be uploaded yet and an admin must look at the site's media storage |
 | `OFFLINE ...` | Tell the person in one line their changes are saved and will be sent when they are online |
 
+Once it prints `SENT`, stop the preview on the person's computer (see Previews left open).
+
 More changes before publishing go to the same branch and are sent the same way.
 
 ## Publishing
@@ -145,7 +150,8 @@ public repos:
   `gh pr merge <number> --squash --delete-branch`: always squash, so each published change is one commit on
   `main`, whatever merges and fixes its branch collected. It deletes the
   merged branch on GitHub and on the computer; then `git switch main` and `git pull --ff-only`, so the next change
-  starts on a new branch. A merged branch is never reused. Reply in one line: "Published. Live in a few minutes:
+  starts on a new branch. A merged branch is never reused. Stop the preview if it still runs (see Previews left
+  open). Reply in one line: "Published. Live in a few minutes:
   <site address>".
 - **Straight to `main`,** only when someone who can push asks for it and there is no new media: run the check,
   commit on `main`, `git pull --ff-only`, `git push`. Never force.
@@ -154,6 +160,37 @@ public repos:
 
 Someone working from a fork follows every other rule the same way: the sync on every prompt (it pulls the site,
 not the fork), the check, the preview.
+
+## Previews left open
+
+A preview keeps running on the person's computer, even after their changes are published, until someone stops it.
+Don't leave one behind, and clear up the ones left from before.
+
+- **Stop the preview of the website you worked on,** whoever started it: once its changes are sent or published, or
+  when the person says they are done without sending. After a test, stop the one you started. Don't ask and don't
+  mention it. The next change starts it again.
+- **Find the ones left from before.** This prints the port and the site's folder of each preview running on the
+  computer; in a folder with several websites, the website's name follows the `#`:
+
+  ```
+  node -e "for(let p=8300;p<=8340;p++)fetch('http://127.0.0.1:'+p,{method:'HEAD'}).then(r=>{const s=r.headers.get('x-nib-site');if(s)console.log(p,decodeURIComponent(s))}).catch(()=>{})"
+  ```
+
+- **Ask before stopping any other:** another conversation may be using it. Ask once per conversation, at
+  the end of the reply, in one line naming the website (the `title` in its `hugo.toml`) and what the person last
+  changed there (that folder's unsent changes, or their latest commits), in plain words: "The preview of the Toyota
+  Uzbekistan website, where you changed the opening hours, is still open on this computer from before. Can I close
+  it?" Several: name them all in one question. On a yes, stop it and reply "Closed." On a no, leave it and don't
+  ask again. Closing a preview never touches their changes.
+- **Stop one** by its port, which also stops the Hugo it started, then run the line above again: it must be gone.
+  Websites started together close together.
+
+  | | Stop |
+  |---|---|
+  | Windows | `powershell -NoProfile -Command 'taskkill /T /F /PID (Get-NetTCPConnection -State Listen -LocalAddress 127.0.0.1 -LocalPort <port>).OwningProcess'` |
+  | macOS, Linux | `kill $(lsof -ti tcp@127.0.0.1:<port> -sTCP:LISTEN)` |
+
+- **Anything on a port that the line doesn't print is not a preview.** Leave it alone and don't mention it.
 
 ## Conflicts, quietly
 

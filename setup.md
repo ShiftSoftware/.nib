@@ -1,7 +1,10 @@
 # Set up a computer for a .nib site
 
 For the agent. The person may not be technical: do every step yourself, keep each message to one short line, and
-when a step needs them (a password, a browser sign-in, a click) say exactly what to do in one line and wait.
+when a step needs them (a password, a browser sign-in, a click, a blocked command only they can allow) say exactly
+what to do in one line and wait. Write nothing else: no notes between steps, nothing about access, forks, tools,
+ports, checks, or what you skipped or found. Replies in
+[AGENTS.md](https://raw.githubusercontent.com/ShiftSoftware/.nib/main/AGENTS.md) holds from your first message.
 Running this again on a set-up computer only fixes what is missing.
 
 `<repos>` is `C:\repos` on Windows and `~/repos` on macOS and Linux, unless the person keeps their projects
@@ -49,6 +52,8 @@ somewhere else. Each site keeps its own copy of `.nib` in a `.nib` folder inside
    f="$HOME/.claude/nib-hook.mjs"; [ -s "$f" ] || exit 0; node "$f"
    ```
 7. **Test it.** From the site's folder: the site's check prints no errors, and its preview, started in the
-   background, serves the site (check its address loads, then stop it).
+   background, serves the site (check its address loads). Then stop it and look for others, as Previews left open
+   in `.nib/AGENTS.md` says.
 8. **Done.** Tell the person in one line that it is ready, and that from now on they open the folder
-   `<repos>/<Org>/<Repo>` in their agent and ask for changes.
+   `<repos>/<Org>/<Repo>` in their agent and ask for changes. Add nothing, except the question about a preview left
+   open when there is one.
